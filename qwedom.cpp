@@ -9,23 +9,24 @@ using namespace std;
  * Node of XML document, either text or element.
  */
 class QweXmlNode {
-public:
-    virtual std::string get_printable(void) = 0;
 };
 typedef QweList <QweXmlNode> QweXmlTree;
 
+
+/**
+ * Node with text.
+ */
 class QweTextNode : public QweXmlNode {
 private:
     std::string str;
 public:
+    /** Create new text node.
+     *
+     * @param s String contents of the node.
+     */
     QweTextNode(std::string s)
     {
         str = s;
-    }
-
-    virtual std::string get_printable(void)
-    {
-        return str;
     }
 };
 
@@ -41,11 +42,6 @@ public:
     {
         name = n;
         value = v;
-    }
-
-    std::string get_printable(void)
-    {
-        return name + "=\"" + value + "\"";
     }
 };
 typedef QweList <QweAttrNode> QweAttrList;
@@ -63,7 +59,7 @@ public:
     {
         name = s;
         children = new QweXmlTree();
-        attributes = new QweAttrList(" ");
+        attributes = new QweAttrList();
     }
 
     
@@ -75,15 +71,6 @@ public:
     void add_child(QweXmlNode *n)
     {
         children->append_item(n);
-    }
-
-    virtual std::string get_printable(void)
-    {
-        return "<" + name +                              \
-            (attributes->is_empty() ? "" : " ") +        \
-            attributes->get_printable() + ">" +          \
-            children->get_printable() +                  \
-            "</" + name + ">";
     }
 };
 
@@ -100,6 +87,5 @@ int main()
     root->add_attribute(a);
     s->add_child(t);
     s->add_attribute(a2);
-    std::cout << root->get_printable();
     return 0;
 }

@@ -1,12 +1,7 @@
-#include <string>
-
-/**
- * This module provides QweList container class which allows to store
- * data of different types.
- */
-
 /**
  * Heterogeneous list
+ * 
+ * @param Data Base class for element stored in the list.
  */
 template <class Data>
 class QweList {
@@ -22,17 +17,18 @@ class QweList {
             data = d;
         }
     };
-protected:
+private:
     Node *head, *tail;
-    std::string sep;
 public:
-    QweList(std::string s="")
+    QweList(void)
     {
         head = 0;
         tail = 0;
-        sep = s;
     }
 
+    /**
+     * Add new item to the end of list.
+     */
     void append_item(Data *d)
     {
         Node *n = new Node(d);
@@ -46,28 +42,12 @@ public:
         }
     }
 
+    /**
+     * Return true if list is empty.
+     */
     bool is_empty(void)
     {
         return (head == 0);
-    }
-
-
-    std::string get_printable(void)
-    {
-        std::string out;
-        bool first = true;
-        Node *c = head;
-        
-        while (c)
-        { 
-            if (first)
-                first = false;
-            else
-                out.append(sep);
-            out.append(c->data->get_printable());
-            c = c->next;
-        }
-        return out;
     }
 };
 
