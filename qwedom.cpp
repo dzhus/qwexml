@@ -31,29 +31,31 @@ public:
 };
 
 /**
- * Attribute list of element node.
- */
-class QweAttrNode {
-private:
-    string name;
-    string value;
-public:
-    QweAttrNode(string n, string v)
-    {
-        name = n;
-        value = v;
-    }
-};
-typedef QweList <QweAttrNode> QweAttrList;
-
-/**
  * XML element with siblings and attributes.
  */
 class QweElementNode : public QweXmlNode {
+
+    /**
+     * Attribute list of element node.
+     */
+    class QweAttrNode {
+    private:
+        string name;
+        string value;
+    public:
+        QweAttrNode(string n, string v)
+        {
+            name = n;
+            value = v;
+        }
+    };
+    typedef QweList <QweAttrNode> QweAttrList;
+    
 private:
     std::string name;
     QweXmlTree *children;
     QweAttrList *attributes;
+    
 public:
     QweElementNode(std::string s)
     {
@@ -61,11 +63,13 @@ public:
         children = new QweXmlTree();
         attributes = new QweAttrList();
     }
-
     
-    void add_attribute(QweAttrNode *n)
+    /**
+     * Add new attribute to element.
+     */
+    void add_attribute(string name, string value)
     {
-        return attributes->append_item(n);
+        return attributes->append_item(new QweAttrNode(name, value));
     }
     
     void add_child(QweXmlNode *n)
@@ -78,14 +82,12 @@ int main()
 {
     QweElementNode *root = new QweElementNode("root");
     QweElementNode *s = new QweElementNode("s");
-    QweAttrNode *a = new QweAttrNode("key", "value");
-    QweAttrNode *a2 = new QweAttrNode("key2", "value2");
     QweTextNode *t = new QweTextNode("Text inside the tag");
     root->add_child(t);
     root->add_child(s);
     root->add_child(t);
-    root->add_attribute(a);
+    root->add_attribute("key", "value");
     s->add_child(t);
-    s->add_attribute(a2);
+    s->add_attribute("key2", "value");
     return 0;
 }
