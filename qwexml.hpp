@@ -25,13 +25,18 @@ public:
     bool is_empty(void);
 };
 
+
 /**
  * Node of XML document, either text or element.
  */
 class QweXmlNode {
 };
-typedef QweList <QweXmlNode> QweXmlTree;
+typedef QweList <QweXmlNode> QweNodeList;
 
+
+/**
+ * Node containing only text.
+ */
 class QweTextNode : public QweXmlNode {
 private:
     string str;
@@ -39,6 +44,9 @@ public:
     QweTextNode(string s);
 };
 
+/**
+ * Element node with attributes and children.
+ */
 class QweElementNode : public QweXmlNode {
     class QweAttrNode {
     private:
@@ -51,7 +59,7 @@ class QweElementNode : public QweXmlNode {
     
 private:
     string name;
-    QweXmlTree *children;
+    QweNodeList *children;
     QweAttrList *attributes;
     
 public:

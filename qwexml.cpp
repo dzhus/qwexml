@@ -40,10 +40,11 @@ QweTextNode::QweTextNode(string s)
     :str(s) 
 {}
 
+
 QweElementNode::QweElementNode(string s)
     :name(s)
 {
-    children = new QweXmlTree();
+    children = new QweNodeList();
     attributes = new QweAttrList();
 }
 
