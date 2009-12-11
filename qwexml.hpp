@@ -41,7 +41,7 @@ public:
         /**
          * Standard traits.
          */
-        typedef input_iterator_tag iterator_category;
+        typedef bidirectional_iterator_tag iterator_category;
         typedef Data value_type;
         typedef ptrdiff_t difference_type;
         typedef Data* pointer;
