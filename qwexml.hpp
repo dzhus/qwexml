@@ -15,16 +15,39 @@ class QweList {
     public:
         Data *data;
         Node *next, *prev;
-        Node(Data *d);
+        Node(Data *d)
+            :next(0), prev(0), data(d)
+        {}
     };
 private:
     Node *head, *tail;
 public:
-    QweList(void);
-    void append_item(Data *d);
-    bool is_empty(void);
-};
+    QweList(void)
+        :head(0), tail(0)
+    {}
+    
+    void append_item(Data *d)
+    {
+        Node *n = new Node(d);
+        if (!head)
+            head = tail = n;
+        else
+        {
+            n->prev = tail;
+            tail->next = n;
+            tail = n;
+        }
+    }
+    
+    /**
+     * Return true if list is empty.
+     */
+    bool is_empty(void)
+    {
+        return (head == 0);
+    }
 
+};
 
 /**
  * Node of XML document, either text or element.
@@ -41,8 +64,14 @@ class QweTextNode : public QweXmlNode {
 private:
     string str;
 public:
-    QweTextNode(string s);
-    string get_contents(void);
+    QweTextNode(string s)
+        :str(s)
+    {}
+
+    string get_contents(void)
+    {
+        return this->str;
+    }
 };
 
 /**
@@ -54,7 +83,9 @@ class QweElementNode : public QweXmlNode {
         string name;
         string value;
     public:
-        QweAttrNode(string n, string v);
+        QweAttrNode(string n, string v)
+            :name(n), value(v)
+        {}
     };
     typedef QweList <QweAttrNode> QweAttrList;
     
@@ -64,9 +95,32 @@ private:
     QweAttrList *attributes;
     
 public:
-    QweElementNode(string s);
-    void add_attribute(string name, string value);
-    void add_child(QweXmlNode *n);
-    string get_name(void);
+    QweElementNode(string s)
+        :name(s)
+    {
+        children = new QweNodeList();
+        attributes = new QweAttrList();
+    }
+
+    /**
+     * Add new attribute to element.
+     */
+    void add_attribute(string name, string value)
+    {
+        attributes->append_item(new QweAttrNode(name, value));
+    }
+    
+    /**
+     * Add new child node to element.
+     */
+    void add_child(QweXmlNode *n)
+    {
+        children->append_item(n);
+    }
+    
+    string get_name(void)
+    {
+        return this->name;
+    }
 };
 #endif
