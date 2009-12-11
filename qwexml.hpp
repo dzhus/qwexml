@@ -118,6 +118,11 @@ public:
         children->append_item(n);
     }
     
+    bool has_children(void)
+    {
+        return !(children->is_empty);
+    }
+
     string get_name(void)
     {
         return this->name;
