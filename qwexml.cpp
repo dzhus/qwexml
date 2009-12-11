@@ -40,6 +40,10 @@ QweTextNode::QweTextNode(string s)
     :str(s) 
 {}
 
+string QweTextNode::get_contents(void)
+{
+    return this->str;
+}
 
 QweElementNode::QweElementNode(string s)
     :name(s)
@@ -65,3 +69,7 @@ void QweElementNode::add_child(QweXmlNode *n)
     children->append_item(n);
 }
 
+string QweElementNode::get_name(void)
+{
+    return this->name;
+}

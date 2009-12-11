@@ -42,6 +42,7 @@ private:
     string str;
 public:
     QweTextNode(string s);
+    string get_contents(void);
 };
 
 /**
@@ -66,5 +67,6 @@ public:
     QweElementNode(string s);
     void add_attribute(string name, string value);
     void add_child(QweXmlNode *n);
+    string get_name(void);
 };
 #endif
