@@ -147,7 +147,8 @@ public:
         StlIterator i = l.begin(), end = l.end();
         while (i != end)
         {
-            append_item(*i++);
+            append_item(*i);
+            i++;
         }
     }
 
@@ -181,12 +182,14 @@ public:
 
     StlIterator begin(void)
     {
-        return StlIterator(this, this->head);
+        /// @internal When list is empty, immediately point to tail
+        /// sentinel, so that @code{begin() == end()}
+        return StlIterator(this, head ? head : tail_sentinel);
     }
 
     StlIterator rbegin(void)
     {
-        return StlIterator(this, this->tail);
+        return StlIterator(this, tail ? tail : head_sentinel);
     }
 
     StlIterator end(void)
