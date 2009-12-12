@@ -50,6 +50,17 @@ public:
      * @todo Output iteration
      */
     class StlIterator {
+    private:
+        /**
+         * List we iterate over.
+         */
+        QweList<Data> *list;
+
+        /**
+         * Current list position.
+         */
+        Node *position;
+
     public:
 #ifdef QWE_USE_STL
         /**
@@ -61,16 +72,6 @@ public:
         typedef Data* pointer;
         typedef Data& reference;
 #endif
-
-        /**
-         * List we iterate over.
-         */
-        QweList<Data> *list;
-
-        /**
-         * Current list position.
-         */
-        Node *position;
 
         StlIterator(void)
             :list(0), position(0)
