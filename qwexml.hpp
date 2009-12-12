@@ -311,6 +311,12 @@ private:
     QweAttrList *attributes;
     
 public:
+    QweElementNode(void)
+    {
+        children = new QweNodeList();
+        attributes = new QweAttrList();
+    }
+
     QweElementNode(string s)
         :name(s)
     {
