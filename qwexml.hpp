@@ -44,9 +44,14 @@ private:
     Node *head, *tail, *head_sentinel, *tail_sentinel;
 
 public:
-#ifdef QWE_USE_STL
+    /**
+     * STL-style bidirectional iterator for QweList.
+     *
+     * @todo Output iteration
+     */
     class StlIterator {
     public:
+#ifdef QWE_USE_STL
         /**
          * Standard traits.
          */
@@ -55,6 +60,7 @@ public:
         typedef ptrdiff_t difference_type;
         typedef Data* pointer;
         typedef Data& reference;
+#endif
 
         /**
          * List we iterate over.
@@ -121,7 +127,6 @@ public:
             return position->data;
         }
     };
-#endif
 
     QweList(void)
         :head(0), tail(0)
@@ -159,7 +164,6 @@ public:
         return (head == 0);
     }
 
-#ifdef QWE_USE_STL
     StlIterator begin(void)
     {
         return StlIterator(this, this->head);
@@ -179,7 +183,6 @@ public:
     {
         return StlIterator(this, this->head_sentinel);
     }
-#endif
 };
 
 /**
@@ -337,9 +340,8 @@ public:
         return get_name();
     }
 
-#ifdef QWE_USE_STL
     /**
-     * STL iterators for children
+     * STL-style iterators for children
      *
      * @todo Boilerplate code.
      */
@@ -362,7 +364,6 @@ public:
     {
         return children->rend();
     }
-#endif
 
     QweElementNode* _copy(void)
     {
