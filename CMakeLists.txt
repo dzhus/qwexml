@@ -1,4 +1,12 @@
+cmake_minimum_required(VERSION 2.8)
+
 PROJECT(qwexml)
-ADD_LIBRARY(qwexml STATIC qwexml.cpp)
+
+ADD_LIBRARY(qwexml SHARED qwexml.hpp)
+SET_TARGET_PROPERTIES(qwexml PROPERTIES
+  LINKER_LANGUAGE CXX)
+
+ADD_DEFINITIONS(-DQWE_USE_STL)
 ADD_EXECUTABLE(test qwetest.cpp)
-TARGET_LINK_LIBRARIES(test qwexml qwelist)
+
+TARGET_LINK_LIBRARIES(test qwexml)
