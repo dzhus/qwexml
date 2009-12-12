@@ -45,6 +45,12 @@ private:
 
     ListItem *head, *tail, *head_sentinel, *tail_sentinel;
 
+    void _init_sentinels(void)
+    {
+        /// Each list must have unique sentinels
+        head_sentinel = new ListItem();
+        tail_sentinel = new ListItem();
+    }
 public:
     /**
      * STL-style bidirectional iterator for QweList.
@@ -134,15 +140,12 @@ public:
     QweList(void)
         :head(0), tail(0)
     {
-        /// Each list must have unique sentinels
-        head_sentinel = new ListItem();
-        tail_sentinel = new ListItem();
+        _init_sentinels();
     }
-
+    
     QweList(QweList &l)
     {
-        head_sentinel = new ListItem();
-        tail_sentinel = new ListItem();
+        _init_sentinels();
 
         StlIterator i = l.begin(), end = l.end();
         while (i != end)
