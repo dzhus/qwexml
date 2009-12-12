@@ -4,14 +4,21 @@
 #include <iterator>
 #endif
 
+/**
+ * @todo Use homebrew string implementation.
+ */
 #include <string>
 
 using namespace std;
 
 /**
- * Heterogeneous list
+ * Heterogeneous list.
+ *
+ * List elements are copied as they're added to the list. List
+ * elements must support virual _copy() method which returns a pointer
+ * to the copied object.
  * 
- * @param Data Base class for element stored in the list.
+ * @param T Base class for element stored in the list.
  */
 template <typename T>
 class QweList {
@@ -28,8 +35,10 @@ private:
         {}
 
         Node(Data *d)
-            :next(0), prev(0), data(d)
-        {}
+            :next(0), prev(0)
+        {
+            data = d->_copy();
+        }
     };
 
     Node *head, *tail, *head_sentinel, *tail_sentinel;
@@ -179,6 +188,14 @@ public:
 class QweXmlNode {
 public:
     virtual string get_printable(void) = 0;
+
+    /**
+     * Return a pointer to copy of current object.
+     *
+     * We need this because copy constructors can't be declared as
+     * virtual.
+     */
+    virtual QweXmlNode* _copy(void) = 0;
 };
 typedef QweList <QweXmlNode> QweNodeList;
 
@@ -195,6 +212,11 @@ public:
         :str(s)
     {}
 
+    QweTextNode(QweTextNode &n)
+    {
+        str = n.str;
+    }
+
     /**
      * Raw contents of text node.
      */
@@ -203,14 +225,26 @@ public:
         return str;
     }
 
+    void set_contents(string s)
+    {
+        str = s;
+    }
+
     string get_printable(void)
     {
         return get_contents();
+    }
+
+    QweTextNode* _copy(void)
+    {
+        return new QweTextNode(*this);
     }
 };
 
 /**
  * Element node with attributes and children.
+ *
+ * @todo Deep copying is not supported.
  */
 class QweElementNode : public QweXmlNode {
     class QweAttrNode {
@@ -221,6 +255,17 @@ class QweElementNode : public QweXmlNode {
         QweAttrNode(string n, string v)
             :name(n), value(v)
         {}
+
+        QweAttrNode(QweAttrNode &n)
+        {
+            name = n.name;
+            value = n.value;
+        }
+
+        QweAttrNode* _copy(void)
+        {
+            return new QweAttrNode(*this);
+        }
     };
     typedef QweList <QweAttrNode> QweAttrList;
     
@@ -237,18 +282,34 @@ public:
         attributes = new QweAttrList();
     }
 
+    QweElementNode(QweElementNode &n)
+    {
+        name = n.name;
+    }
+
     /**
      * Add new attribute to element.
      */
     void add_attribute(string name, string value)
     {
+        /// @note
+        /// Double memory allocation, because list copies all
+        /// data!
         attributes->append_item(new QweAttrNode(name, value));
     }
     
     /**
-     * Add new child node to element.
+     * Add new child element node to element.
      */
-    void add_child(QweXmlNode *n)
+    void add_child(QweElementNode *n)
+    {
+        children->append_item(n);
+    }
+
+    /**
+     * Add new child text node to element.
+     */
+    void add_child(QweTextNode *n)
     {
         children->append_item(n);
     }
@@ -266,6 +327,11 @@ public:
         return name;
     }
 
+    void set_name(string s)
+    {
+        name = s;
+    }
+    
     string get_printable(void)
     {
         return get_name();
@@ -297,5 +363,10 @@ public:
         return children->rend();
     }
 #endif
+
+    QweElementNode* _copy(void)
+    {
+        return new QweElementNode(*this);
+    }
 };
 #endif
