@@ -27,23 +27,23 @@ class QweList {
 private:
     typedef T Data;
 
-    class Node {
+    class ListItem {
     public:
         Data *data;
-        Node *next, *prev;
+        ListItem *next, *prev;
 
-        Node(void)
+        ListItem(void)
             :next(0), prev(0), data(0)
         {}
 
-        Node(Data *d)
+        ListItem(Data *d)
             :next(0), prev(0)
         {
             data = d->_copy();
         }
     };
 
-    Node *head, *tail, *head_sentinel, *tail_sentinel;
+    ListItem *head, *tail, *head_sentinel, *tail_sentinel;
 
 public:
     /**
@@ -61,7 +61,7 @@ public:
         /**
          * Current list position.
          */
-        Node *position;
+        ListItem *position;
 
     public:
 #ifdef QWE_USE_STL
@@ -79,7 +79,7 @@ public:
             :list(0), position(0)
         {}
 
-        StlIterator(QweList<T>* l, Node* p)
+        StlIterator(QweList<T>* l, ListItem* p)
             :list(l), position(p)
         {}
 
@@ -135,14 +135,14 @@ public:
         :head(0), tail(0)
     {
         /// Each list must have unique sentinels
-        head_sentinel = new Node();
-        tail_sentinel = new Node();
+        head_sentinel = new ListItem();
+        tail_sentinel = new ListItem();
     }
 
     QweList(QweList &l)
     {
-        head_sentinel = new Node();
-        tail_sentinel = new Node();
+        head_sentinel = new ListItem();
+        tail_sentinel = new ListItem();
 
         StlIterator i = l.begin(), end = l.end();
         while (i != end)
@@ -157,7 +157,7 @@ public:
      */
     void append_item(Data *d)
     {
-        Node *n = new Node(d);
+        ListItem *n = new ListItem(d);
         if (!head)
         {
             head = tail = n;
