@@ -19,6 +19,9 @@ using namespace std;
  * List elements are copied as they're added to the list. List
  * elements must support virual _copy() method which returns a pointer
  * to the copied object.
+ *
+ * @intern We need _copy because virtual copy constructors aren't
+ * supported.
  * 
  * @param T Base class for element stored in the list.
  */
@@ -29,6 +32,13 @@ private:
 
     class ListItem {
     public:
+        /**
+         * Pointer to item data.
+         *
+         * @remark Rationale behind storing pointers is our wish to
+         * support STL-style external iterators for lists of objects
+         * which are inherited from single base class.
+         */
         Data *data;
         ListItem *next, *prev;
 
@@ -131,6 +141,9 @@ public:
             return *this;
         }
 
+        /**
+         * Return pointer to iterator's current item.
+         */
         Data* operator *(void)
         {
             return position->data;
