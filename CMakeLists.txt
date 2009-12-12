@@ -10,3 +10,6 @@ ADD_DEFINITIONS(-DQWE_USE_STL)
 ADD_EXECUTABLE(test qwetest.cpp)
 
 TARGET_LINK_LIBRARIES(test qwexml)
+
+ADD_CUSTOM_TARGET(doc doxygen Doxyfile)
+ADD_CUSTOM_TARGET(hgclean rm -frv `hg status --unknown --no-status`)
