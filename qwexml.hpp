@@ -6,6 +6,8 @@
 
 /**
  * @todo Use homebrew string implementation.
+ * 
+ * @todo Fix memory leaks.
  */
 #include <string>
 
@@ -136,7 +138,19 @@ public:
         head_sentinel = new Node();
         tail_sentinel = new Node();
     }
-    
+
+    QweList(QweList &l)
+    {
+        head_sentinel = new Node();
+        tail_sentinel = new Node();
+
+        StlIterator i = l.begin(), end = l.end();
+        while (i != end)
+        {
+            append_item(*i++);
+        }
+    }
+
     /**
      * Append new item to the end of list.
      */
@@ -248,7 +262,6 @@ public:
 /**
  * Element node with attributes and children.
  *
- * @todo Deep copying is not supported.
  */
 class QweElementNode : public QweXmlNode {
     class QweAttrNode {
@@ -286,9 +299,14 @@ public:
         attributes = new QweAttrList();
     }
 
+    /**
+     * Deep copy of existing element node.
+     */
     QweElementNode(QweElementNode &n)
     {
         name = n.name;
+        children = new QweNodeList(*n.children);
+        attributes = new QweAttrList(*n.attributes);
     }
 
     /**
