@@ -150,7 +150,7 @@ public:
         StlIterator i = l.begin(), end = l.end();
         while (i != end)
         {
-            append_item(*i);
+            push_item(*i);
             i++;
         }
     }
@@ -158,7 +158,7 @@ public:
     /**
      * Append new item to the end of list.
      */
-    void append_item(Data *d)
+    void push_item(Data *d)
     {
         ListItem *n = new ListItem(d);
         if (!head)
@@ -336,12 +336,12 @@ public:
         /// @note
         /// Double memory allocation, because list copies all
         /// data!
-        attributes->append_item(new QweAttrNode(name, value));
+        attributes->push_item(new QweAttrNode(name, value));
     }
 
     void add_attribute(QweAttrNode *n)
     {
-        attributes->append_item(n);
+        attributes->push_item(n);
     }
     
     /**
@@ -349,7 +349,7 @@ public:
      */
     void add_child(QweElementNode *n)
     {
-        children->append_item(n);
+        children->push_item(n);
     }
 
     /**
@@ -357,7 +357,7 @@ public:
      */
     void add_child(QweTextNode *n)
     {
-        children->append_item(n);
+        children->push_item(n);
     }
     
     bool has_children(void)
