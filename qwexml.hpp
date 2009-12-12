@@ -205,6 +205,9 @@ public:
 
 /**
  * Node of XML document, either text or element.
+ *
+ * @todo Decouple get_printable(). Implement iterators for traversing
+ * the whole tree (depth-first).
  */
 class QweXmlNode {
 public:
@@ -286,6 +289,16 @@ class QweElementNode : public QweXmlNode {
         {
             return new QweAttrNode(*this);
         }
+
+        string get_name(void)
+        {
+            return name;
+        }
+
+        string get_value(void)
+        {
+            return value;
+        }
     };
     typedef QweList <QweAttrNode> QweAttrList;
     
@@ -349,6 +362,11 @@ public:
         return !(children->is_empty());
     }
 
+    bool has_attributes(void)
+    {
+        return !(attributes->is_empty());
+    }
+
     /**
      * Return plain name of element.
      */
@@ -362,9 +380,40 @@ public:
         name = s;
     }
     
+    /**
+     * String of element node with all attributes and children.
+     */
     string get_printable(void)
     {
-        return get_name();
+        string s = string();
+        s += "<" + get_name();
+        if (has_attributes())
+        {
+            s += " ";
+            QweAttrList::StlIterator i = attributes_begin(), e = attributes_end();
+            bool first = true;
+            while (i != e)
+            {
+                if (!first)
+                    s += " ";
+                first = false;
+                s += (*i)->get_name();
+                s += "=\"" + (*i)->get_value() +"\"";
+                i++;
+            }
+        }
+        s += ">";
+        if (has_children())
+        {
+            QweNodeList::StlIterator i = children_begin(), e = children_end();
+            while (i != e)
+            {
+                s += (*i)->get_printable();
+                i++;
+            }
+        }
+        s+= "</" + get_name() + ">";
+        return s;
     }
 
     /**
@@ -390,6 +439,16 @@ public:
     QweNodeList::StlIterator children_rend(void)
     {
         return children->rend();
+    }
+
+    QweAttrList::StlIterator attributes_begin(void)
+    {
+        return attributes->begin();
+    }
+
+    QweAttrList::StlIterator attributes_end(void)
+    {
+        return attributes->end();
     }
 
     QweElementNode* _copy(void)
