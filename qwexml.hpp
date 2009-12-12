@@ -319,6 +319,11 @@ public:
         /// data!
         attributes->append_item(new QweAttrNode(name, value));
     }
+
+    void add_attribute(QweAttrNode *n)
+    {
+        attributes->append_item(n);
+    }
     
     /**
      * Add new child element node to element.
