@@ -32,6 +32,8 @@ namespace qwe {
 
         class ListItem {
         public:
+            ListItem *next, *prev;
+
             /**
              * Pointer to item data.
              *
@@ -40,7 +42,6 @@ namespace qwe {
              * which are inherited from single base class.
              */
             Data *data;
-            ListItem *next, *prev;
 
             ListItem(void)
                 :next(0), prev(0), data(0)
@@ -102,22 +103,25 @@ namespace qwe {
 
             StlIterator& operator ++(void)
             {
-                position = position->next;
+                return position = position->next;
             }
 
             StlIterator& operator ++(int)
             {
                 position = position->next;
+                return *this;
             }
 
             StlIterator& operator --(void)
             {
                 position = position->prev;
+                return *this;
             }
 
             StlIterator& operator --(int)
             {
                 position = position->prev;
+                return *this;
             }
 
             /**

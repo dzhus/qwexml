@@ -40,8 +40,8 @@ namespace qwe {
      * - feed input stream to chosen token using Token::feed() or input
      *   operator;
      *
-     * - when feeding returns, finished token may be added to a list of
-     *   parsed tokens.
+     * - when feeding successfully returns, finished token may be
+     *   added to a list of parsed tokens.
      *
      * Token::can_eat() and Token::feed() implementations must
      * guarantee that feed() successfully returns only if no errors
@@ -95,7 +95,7 @@ namespace qwe {
         /**
          * Try to add more character contents for token.
          */
-        virtual void feed(std::istream &in) = 0;
+        virtual bool feed(std::istream &in) = 0;
 
         friend std::istream& operator >>(std::istream &in, Token &t)
         {
@@ -198,10 +198,10 @@ namespace qwe {
          * TagToken::name is set to tag name, TagToken::closing is
          * set to true if closing tag was read.
          */
-        void feed(std::istream &in)
+        bool feed(std::istream &in)
         {
             char c;
-            while (c = in.get())
+            while ((c = in.get()))
             {
                 bool accepted = true;
 
@@ -274,26 +274,16 @@ namespace qwe {
                         accepted = false;
                     break;
                 case END:
+                    in.putback(c);
+                    return true;
                 }
             
                 if (accepted)
-                {
                     contents += c;
-
-                    if (current_state == END)
-                        break;
-                }
                 else
-                {
-                    if (current_state == END)
-                    {
-                        in.putback(c);
-                        break;
-                    }
-                    else
-                        error(TAG_ERROR);
-                }
+                    error(TAG_ERROR);
             }
+            return false;
         }
 
         /**
@@ -357,19 +347,20 @@ namespace qwe {
         /**
          * Read characters while filtering function holds.
          */
-        void feed(std::istream &in)
+        bool feed(std::istream &in)
         {
             char c;
-            while (c = in.get())
+            while ((c = in.get()))
             {
                 if (F()(c))
                     contents += c;
                 else
                 {
                     in.putback(c);
-                    break;
+                    return true;
                 }
             }
+            return false;
         }
     };
 
@@ -420,6 +411,7 @@ namespace qwe {
             }
             c = in.peek();
             error(UNKNOWN_TOKEN);
+            return false;
         }
 
         friend class XmlParser;
@@ -436,8 +428,6 @@ namespace qwe {
          */
         friend std::istream& operator >>(std::istream &in, XmlLexer &l)
         {
-            char c;
-
             /// Iterators over the list of known tokens
             TokenList::StlIterator i, end;
             end = l.known->end();

@@ -12,7 +12,7 @@ int main()
     std::cin >> *p;
 
     TokenList::StlIterator i = p->tokens_begin(), end = p->tokens_end();
-    Token *tok;
+
     while (i != end)
     {
         std::cout << (*i)->get_contents();
