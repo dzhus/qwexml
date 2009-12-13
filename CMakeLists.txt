@@ -15,5 +15,11 @@ ADD_EXECUTABLE(qweparse qweparse.cpp)
 TARGET_LINK_LIBRARIES(qwetest qwexml)
 TARGET_LINK_LIBRARIES(qweparse qwexml)
 
+ADD_TEST(NAME qwetest
+  COMMAND qwetest)
+ADD_TEST(NAME qweparse
+  COMMAND qweparse)
+ENABLE_TESTING()
+
 ADD_CUSTOM_TARGET(doc doxygen Doxyfile)
 ADD_CUSTOM_TARGET(hgclean rm -frv `hg status --unknown --no-status`)
