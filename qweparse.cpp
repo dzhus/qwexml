@@ -136,7 +136,7 @@ public:
  * ETag ::= '</' Name S? '>'
  * @endverbatim
  */
-class Tag : public QweToken {
+class QweTagToken : public QweToken {
 private:
     enum state {START, OPEN, SLASH, NAME, CLOSE_NAME, ESPC, EMPTY, END};
 
@@ -167,13 +167,13 @@ public:
         empty = false;
     }
 
-    Tag(void)
+    QweTagToken(void)
     {
         type = TAG;
         flush();
     }
     
-    Tag(Tag &t)
+    QweTagToken(QweTagToken &t)
     {
         type = TAG;
         flush();
@@ -183,17 +183,17 @@ public:
         empty = t.empty;
     }
 
-    Tag* _copy(void)
+    QweTagToken* _copy(void)
     {
-        return new Tag(*this);
+        return new QweTagToken(*this);
     }
     
     /**
      * Read one langle, then possibly one slash, then at least one
      * alpha symbol, then rangle.
      *
-     * Tag::name is set to tag name, Tag::closing is set to true if
-     * closing tag was read.
+     * QweTagToken::name is set to tag name, QweTagToken::closing is
+     * set to true if closing tag was read.
      */
     void feed(istream &in)
     {
@@ -325,24 +325,24 @@ public:
  * @param F Functional object for testing character data.
  */
 template <class F>
-class SimpleToken : public QweToken {
+class QweSimpleToken : public QweToken {
 public:
-    SimpleToken(void)
+    QweSimpleToken(void)
     {
         type = SPACE;
         flush();
     }
     
-    SimpleToken(SimpleToken &t)
+    QweSimpleToken(QweSimpleToken &t)
     {
         type = SPACE;
         flush();
         contents = t.contents;
     }
     
-    SimpleToken* _copy(void)
+    QweSimpleToken* _copy(void)
     {
-        return new SimpleToken(*this);
+        return new QweSimpleToken(*this);
     }
 
     bool can_eat(istream &in)
@@ -369,8 +369,8 @@ public:
     }
 };
 
-typedef SimpleToken<isxmltext> Text;
-typedef SimpleToken<isxmlspace> Space;
+typedef QweSimpleToken<isxmltext> QweTextToken;
+typedef QweSimpleToken<isxmlspace> QweSpaceToken;
 
 typedef QweList <QweToken> QweTokenList;
 //typedef QweList<token_type> QweTokenTypeList;
@@ -469,9 +469,9 @@ public:
 int main()
 {
     QweTokenList *xml_tokens = new QweTokenList();
-    xml_tokens->push_item(new Tag());
-    xml_tokens->push_item(new Space());
-    xml_tokens->push_item(new Text());
+    xml_tokens->push_item(new QweTagToken());
+    xml_tokens->push_item(new QweSpaceToken());
+    xml_tokens->push_item(new QweTextToken());
 
     QweXmlLexer *l = new QweXmlLexer(xml_tokens);
     cin >> *l;
