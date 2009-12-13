@@ -80,6 +80,11 @@ public:
         return contents;
     }
 
+    virtual token_type get_type(void)
+    {
+        return type;
+    }
+
     /**
      * Check upcomin content in the input stream.
      * 
