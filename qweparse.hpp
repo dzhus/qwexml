@@ -422,6 +422,7 @@ namespace qwe {
             error(UNKNOWN_TOKEN);
         }
 
+        friend class XmlParser;
     public:
         XmlLexer(TokenList *l)
             :current(0)
@@ -454,7 +455,7 @@ namespace qwe {
             }
             return in;
         }
-
+        
         TokenList::StlIterator begin(void)
         {
             return tokens->begin();
@@ -463,6 +464,39 @@ namespace qwe {
         TokenList::StlIterator end(void)
         {
             return tokens->end();
+        }
+    };
+
+    class XmlParser
+    {
+    private:
+        XmlLexer *lexer;
+        
+    public:
+        XmlParser(void)
+        {
+            qwe::TokenList *xml_tokens = new qwe::TokenList();
+            xml_tokens->push_item(new qwe::TagToken());
+            xml_tokens->push_item(new qwe::SpaceToken());
+            xml_tokens->push_item(new qwe::TextToken());
+            
+            lexer = new XmlLexer(xml_tokens);
+        }
+
+        friend std::istream& operator >>(std::istream &in, XmlParser &p)
+        {
+            in >> *(p.lexer);
+            return in;
+        }
+
+        TokenList::StlIterator tokens_begin(void)
+        {
+            return lexer->tokens->begin();
+        }
+
+        TokenList::StlIterator tokens_end(void)
+        {
+            return lexer->tokens->end();
         }
     };
 }

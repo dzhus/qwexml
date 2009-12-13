@@ -8,14 +8,11 @@ using namespace qwe;
  */
 int main()
 {
-    qwe::TokenList *xml_tokens = new qwe::TokenList();
-    xml_tokens->push_item(new TagToken());
-    xml_tokens->push_item(new SpaceToken());
-    xml_tokens->push_item(new TextToken());
+    XmlParser *p = new XmlParser();
+    std::cin >> *p;
 
-    XmlLexer *l = new XmlLexer(xml_tokens);
-    std::cin >> *l;
-    TokenList::StlIterator i = l->begin(), end = l->end();
+    TokenList::StlIterator i = p->tokens_begin(), end = p->tokens_end();
+    Token *tok;
     while (i != end)
     {
         std::cout << (*i)->get_contents();
