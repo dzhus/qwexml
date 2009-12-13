@@ -25,14 +25,6 @@ void qwe_error(error_type n)
 }
 
 /**
- * Test if character may be used in tag name.
- */
-bool isxmlname(char c)
-{
-    return isalpha(c); 
-}
-
-/**
  * Token class.
  *
  * Tokens work with input streams, consuming character data from them.
@@ -86,7 +78,7 @@ public:
     }
 
     /**
-     * Check upcomin content in the input stream.
+     * Check upcoming content in the input stream.
      * 
      * General rule for classes implementing this method is to try as
      * little lookahead as possible.
@@ -309,97 +301,64 @@ public:
     }
 };
 
-/**
- * Token class for whitespace.
- */
-class Space : public QweToken {
+class isxmlspace {
 public:
-    Space(void)
+    bool operator () (char c)
     {
-        type = SPACE;
-        flush();
-    }
-
-    Space(Space &t)
-    {
-        type = SPACE;
-        flush();
-        contents = t.contents;
-    }
-
-    Space* _copy(void)
-    {
-        return new Space(*this);
-    }
-
-    bool can_eat(istream &in)
-    {
-        return (isspace(in.peek()));
-    }
-
-    /**
-     * Read whitespace characters until non-space input occurs.
-     */
-    void feed(istream &in)
-    {
-        char c;
-        while (c = in.get())
-        {
-            if (isspace(c))
-                contents += c;
-            else
-            {
-                in.putback(c);
-                break;
-            }
-        }
+        return isalpha(c);
     }
 };
 
-class Text : public QweToken {
+class isxmltext {
 public:
-    Text(void)
-    {
-        type = TEXT;
-        flush();
-    }
-
-    Text(Text &t)
-    {
-        type = TEXT;
-        flush();
-        contents = t.contents;
-    }
-
-    Text* _copy(void)
-    {
-        return new Text(*this);
-    }
-
-
-    /**
-     * Test if character may be used in text node.
-     */
-    bool isxmltext(char c)
+    bool operator () (char c)
     {
         return ((isgraph(c) || isspace(c)) &&   \
                 !((c == '<') || (c == '&')));
     }
+};
+
+/**
+ * Template for token classes which infinitely read character data for
+ * which F holds.
+ *
+ * @param F Functional object for testing character data.
+ */
+template <class F>
+class SimpleToken : public QweToken {
+public:
+    SimpleToken(void)
+    {
+        type = SPACE;
+        flush();
+    }
+    
+    SimpleToken(SimpleToken &t)
+    {
+        type = SPACE;
+        flush();
+        contents = t.contents;
+    }
+    
+    SimpleToken* _copy(void)
+    {
+        return new SimpleToken(*this);
+    }
 
     bool can_eat(istream &in)
     {
-        return (isxmltext(in.peek()));
+        return (F()(in.peek()));
     }
-
+    
     /**
-     * Read characters for which isxmltext() holds.
+     * Read characters while filtering function holds.
      */
     void feed(istream &in)
     {
         char c;
         while (c = in.get())
         {
-            if (isxmltext(c))
+            if (F()(c))
                 contents += c;
             else
             {
@@ -409,6 +368,9 @@ public:
         }
     }
 };
+
+typedef SimpleToken<isxmltext> Text;
+typedef SimpleToken<isxmlspace> Space;
 
 typedef QweList <QweToken> QweTokenList;
 //typedef QweList<token_type> QweTokenTypeList;
