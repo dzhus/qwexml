@@ -433,7 +433,7 @@ namespace qwe {
         /**
          * Try each known token, completely read it.
          */
-        friend istream& operator >>(istream &in, XmlLexer &l)
+        friend std::istream& operator >>(std::istream &in, XmlLexer &l)
         {
             char c;
 
@@ -444,7 +444,7 @@ namespace qwe {
             {
                 l.current = l.choose_token(in);
 
-                cin >> *(l.current);
+                in >> *(l.current);
             
                 /// Store copy of fully read token
                 l.tokens->push_item(l.current);
