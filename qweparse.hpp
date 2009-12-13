@@ -3,6 +3,7 @@
 #include "qwexml.hpp"
 #include <string>
 #include <iostream>
+#include <stdlib.h>    
 
 namespace qwe {
 
@@ -18,10 +19,10 @@ namespace qwe {
         switch (n)
         {
         case TAG_ERROR:
-            cout << "Error while reading tag" << endl;
+            std::cout << "Error while reading tag" << std::endl;
             exit(TAG_ERROR);
         case UNKNOWN_TOKEN:
-            cout << "Could not choose appropriate token" << endl;
+            std::cout << "Could not choose appropriate token" << std::endl;
             exit(UNKNOWN_TOKEN);
         }
     }
@@ -56,7 +57,7 @@ namespace qwe {
         /**
          * Raw token contents as read from input stream.
          */
-        string contents;
+        std::string contents;
     
         token_type type;
     public:
@@ -69,7 +70,7 @@ namespace qwe {
             contents = "";
         }
 
-        string get_contents(void)
+        std::string get_contents(void)
         {
             return contents;
         }
@@ -89,14 +90,14 @@ namespace qwe {
          *
          * @return True if parser should try feeding this token.
          */
-        virtual bool can_eat(istream &in) = 0;
+        virtual bool can_eat(std::istream &in) = 0;
     
         /**
          * Try to add more character contents for token.
          */
-        virtual void feed(istream &in) = 0;
+        virtual void feed(std::istream &in) = 0;
 
-        friend istream& operator >>(istream &in, Token &t)
+        friend std::istream& operator >>(std::istream &in, Token &t)
         {
             t.feed(in);
             return in;
@@ -147,7 +148,7 @@ namespace qwe {
         /**
          * Tag name.
          */
-        string name;
+        std::string name;
 
         /**
          * True if tag is closing.
@@ -197,7 +198,7 @@ namespace qwe {
          * TagToken::name is set to tag name, TagToken::closing is
          * set to true if closing tag was read.
          */
-        void feed(istream &in)
+        void feed(std::istream &in)
         {
             char c;
             while (c = in.get())
@@ -272,6 +273,7 @@ namespace qwe {
                     else
                         accepted = false;
                     break;
+                case END:
                 }
             
                 if (accepted)
@@ -297,7 +299,7 @@ namespace qwe {
         /**
          * Decide to eat tag if stream starts with langle.
          */
-        bool can_eat(istream &in)
+        bool can_eat(std::istream &in)
         {
             return ('<' == in.peek());
         }
@@ -347,7 +349,7 @@ namespace qwe {
             return new SimpleToken(*this);
         }
 
-        bool can_eat(istream &in)
+        bool can_eat(std::istream &in)
         {
             return (F()(in.peek()));
         }
@@ -355,7 +357,7 @@ namespace qwe {
         /**
          * Read characters while filtering function holds.
          */
-        void feed(istream &in)
+        void feed(std::istream &in)
         {
             char c;
             while (c = in.get())
@@ -403,7 +405,7 @@ namespace qwe {
          * 
          * @return Pointer to appropriate Token.
          */
-        Token* choose_token(istream &in)
+        Token* choose_token(std::istream &in)
         {
             char c;
             TokenList::StlIterator i, end;
