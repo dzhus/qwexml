@@ -108,6 +108,11 @@ namespace qwe {
             {
                 return value;
             }
+
+            void set_value(std::string &v)
+            {
+                value = v;
+            }
         };
         typedef List <AttrNode> AttrList;
 
@@ -239,7 +244,7 @@ namespace qwe {
         {
             return children->begin();
         }
-
+        
         NodeList::StlIterator children_end(void)
         {
             return children->end();
@@ -263,6 +268,24 @@ namespace qwe {
         AttrList::StlIterator attributes_end(void)
         {
             return attributes->end();
+        }
+
+        /**
+         * Convinience accessor.
+         */
+        XmlNode* first_child(void)
+        {
+            return children->first_item();
+        }
+
+        XmlNode* last_child(void)
+        {
+            return children->last_item();
+        }
+
+        AttrNode* first_attribute(void)
+        {
+            return attributes->first_item();
         }
 
         ElementNode* _copy(void)

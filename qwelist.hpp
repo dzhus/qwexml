@@ -13,12 +13,24 @@
 
 namespace qwe {
     
+    class Listable {
+    public:
+        virtual Listable* _copy(void) = 0;
+    };
+
     /**
      * Heterogeneous list.
+     *
+     * List items contain pointers to copies of objects pointers to
+     * which were pushed to the list.
      *
      * List elements are copied as they're added to the list. List
      * elements must support virual _copy() method which returns a pointer
      * to the copied object.
+     * 
+     * @remark Rationale behind storing pointers is our wish to
+     * support STL-style external iterators for lists of objects
+     * which are inherited from single base class.
      *
      * @param T Base class for element stored in the list.
      *
@@ -33,14 +45,6 @@ namespace qwe {
         class ListItem {
         public:
             ListItem *next, *prev;
-
-            /**
-             * Pointer to item data.
-             *
-             * @remark Rationale behind storing pointers is our wish to
-             * support STL-style external iterators for lists of objects
-             * which are inherited from single base class.
-             */
             Data *data;
 
             ListItem(void)
@@ -103,7 +107,8 @@ namespace qwe {
 
             StlIterator& operator ++(void)
             {
-                return position = position->next;
+                position = position->next;
+                return *this;
             }
 
             StlIterator& operator ++(int)
@@ -127,6 +132,9 @@ namespace qwe {
             /**
              * Compare two iterators by comparing underlying lists and
              * positions.
+             *
+             * @remark Comparing iterators is not the same as
+             * comparing items they point to.
              */
             bool operator==(StlIterator iter)
             {
@@ -192,6 +200,11 @@ namespace qwe {
             head->prev = head_sentinel;
         }
 
+        void pop_item()
+        {
+            tail->prev->next = tail_sentinel;
+        }
+        
         /**
          * Return true if list is empty.
          */
@@ -223,6 +236,17 @@ namespace qwe {
         {
             return StlIterator(this, this->head_sentinel);
         }
+
+        Data* first_item(void)
+        {
+            return *begin();
+        }
+
+        Data* last_item(void)
+        {
+            return *rbegin();
+        }
+
     };
 }
 #endif
