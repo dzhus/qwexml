@@ -78,6 +78,7 @@ namespace qwe {
      *
      */
     class ElementNode : public XmlNode {
+    private:
         class AttrNode {
         private:
             std::string name;
@@ -110,7 +111,6 @@ namespace qwe {
         };
         typedef List <AttrNode> AttrList;
 
-    private:
         std::string name;
         NodeList *children;
         AttrList *attributes;
