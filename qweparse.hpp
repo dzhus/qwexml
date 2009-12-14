@@ -9,7 +9,7 @@ namespace qwe {
 
     enum token_type {NONE, TAG, SPACE, TEXT};
 
-    enum error_type {UNKNOWN_TOKEN, TAG_ERROR};
+    enum error_type {UNKNOWN_TOKEN, TAG_ERROR, UNBALANCED_TAG, UNEXPECTED_CLOSE};
 
     /**
      * Simple error handler.
@@ -24,15 +24,21 @@ namespace qwe {
         case UNKNOWN_TOKEN:
             std::cout << "Could not choose appropriate token" << std::endl;
             exit(UNKNOWN_TOKEN);
+        case UNBALANCED_TAG:
+            std::cout << "Unbalanced opening and closing tags" << std::endl;
+            exit(UNBALANCED_TAG);
+        case UNEXPECTED_CLOSE:
+            std::cout << "Unexpected closing tag" << std::endl;
+            exit(UNEXPECTED_CLOSE);
         }
     }
 
     /**
      * Token class.
      *
-     * Tokens work with input streams, consuming character data from them.
-     * A high level parser must parse character stream consisting of known
-     * tokens using the following policy:
+     * Tokens work with input streams, consuming character data from
+     * them. A high level parser must parse character stream
+     * consisting of known tokens using the following policy:
      *
      * - choose token to use by calling Token::can_eat() method of each
      *   known token with input stream;
@@ -191,6 +197,21 @@ namespace qwe {
             return new TagToken(*this);
         }
     
+        std::string get_name(void)
+        {
+            return name;
+        }
+
+        bool is_closing(void)
+        {
+            return closing;
+        }
+
+        bool is_empty(void)
+        {
+            return empty;
+        }
+
         /**
          * Read one langle, then possibly one slash, then at least one
          * alpha symbol, then rangle.
@@ -455,13 +476,39 @@ namespace qwe {
         {
             return tokens->end();
         }
+
+        TokenList::StlIterator rbegin(void)
+        {
+            return tokens->rbegin();
+        }
+
+        TokenList::StlIterator rend(void)
+        {
+            return tokens->rend();
+        }
     };
 
     class XmlParser
     {
     private:
         XmlLexer *lexer;
-        
+
+        /**
+         * Iterators pointing to beginning and end of tokens processed
+         * so far.
+         */
+        TokenList::StlIterator begin, end;
+
+        /**
+         * Parsed XML tree.
+         */
+        ElementNode *root;
+
+        /**
+         * True if some tokens have been parsed.
+         */
+        bool started;
+
     public:
         XmlParser(void)
         {
@@ -474,8 +521,71 @@ namespace qwe {
         }
 
         friend std::istream& operator >>(std::istream &in, XmlParser &p)
-        {
+        {            
+            TokenList stack;
+            ElementNode *current_node;
+
+            // Temporary tokens
+            Token *current;
+            TagToken *current_tag;
+            TextToken *current_text;
+            SpaceToken *current_space;
+
             in >> *(p.lexer);
+            
+            if (!p.started)
+            {
+                p.begin = p.lexer->begin();
+                p.started = true;
+            }
+
+            /// @todo Fix this
+            current_node = p.root = new ElementNode("XML");
+
+            p.end = p.lexer->end();
+
+            while (p.begin != p.end)
+            {
+                current = *(p.begin);
+                switch (current->get_type())
+                {
+                case TAG:
+                    current_tag = (TagToken *)(current);
+                    if (current_tag->is_closing())
+                    {
+                        if (stack.is_empty())
+                            error(UNEXPECTED_CLOSE);
+                        else if ((current_tag->get_name()) ==            \
+                              ((TagToken *)(stack.last_item()))->get_name())
+                        {
+                            // Tag successfully closed
+                            stack.pop_item();
+                            current_node = (ElementNode *)(current_node->get_parent());
+                        }
+                        else
+                            error(UNBALANCED_TAG);
+                    }
+                    else
+                    {
+                        current_node->add_child(new ElementNode(current_tag->get_name()));
+
+                        // Expect inner contents for non-empty tags
+                        if (!current_tag->is_empty())
+                        {
+                            stack.push_item(current_tag);
+                            current_node = (ElementNode *)(current_node->last_child());
+                        }
+                    }
+                    break;
+
+                case TEXT:
+                    current_text = (TextToken *)(current);
+                    current_node->add_child(new TextNode(current_text->get_contents()));
+                    break;
+                }
+                p.begin++;
+            }
+            std::cout << p.root->get_printable();
             return in;
         }
 
