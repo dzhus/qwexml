@@ -18,7 +18,23 @@ namespace qwe {
      * the whole tree (depth-first).
      */
     class XmlNode {
+    private:
+        /**
+         * Pointer to parent node.
+         */
+        XmlNode* parent;
+
     public:
+        XmlNode(void)
+        {
+            parent = 0;
+        }
+
+        XmlNode* get_parent(void)
+        {
+            return parent;
+        }
+
         virtual std::string get_printable(void) = 0;
 
         /**
@@ -28,6 +44,9 @@ namespace qwe {
          * virtual.
          */
         virtual XmlNode* _copy(void) = 0;
+
+        friend class TextNode;
+        friend class ElementNode;
     };
     typedef List <XmlNode> NodeList;
 
@@ -166,6 +185,7 @@ namespace qwe {
         void add_child(ElementNode *n)
         {
             children->push_item(n);
+            ((ElementNode *)(last_child()))->parent = this;
         }
 
         /**
@@ -174,6 +194,7 @@ namespace qwe {
         void add_child(TextNode *n)
         {
             children->push_item(n);
+            ((TextNode *)(last_child()))->parent = this;
         }
 
         bool has_children(void)
