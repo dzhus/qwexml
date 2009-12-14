@@ -299,7 +299,7 @@ namespace qwe {
     public:
         bool operator () (char c)
         {
-            return isalpha(c);
+            return isspace(c);
         }
     };
 
@@ -318,18 +318,18 @@ namespace qwe {
      *
      * @param F Functional object for testing character data.
      */
-    template <class F>
+    template <class F, token_type T>
     class SimpleToken : public Token {
     public:
         SimpleToken(void)
         {
-            type = SPACE;
+            type = T;
             flush();
         }
     
         SimpleToken(SimpleToken &t)
         {
-            type = SPACE;
+            type = T;
             flush();
             contents = t.contents;
         }
@@ -364,8 +364,8 @@ namespace qwe {
         }
     };
 
-    typedef SimpleToken<isxmltext> TextToken;
-    typedef SimpleToken<isxmlspace> SpaceToken;
+    typedef SimpleToken<isxmltext, TEXT> TextToken;
+    typedef SimpleToken<isxmlspace, SPACE> SpaceToken;
 
     typedef List <Token> TokenList;
 
