@@ -2,21 +2,14 @@ cmake_minimum_required(VERSION 2.8)
 
 PROJECT(qwexml)
 
-ADD_LIBRARY(qwexml SHARED qwexml.hpp)
-ADD_LIBRARY(qweparse SHARED qweparse.hpp)
-SET_TARGET_PROPERTIES(qwexml PROPERTIES
-  LINKER_LANGUAGE CXX)
-
-SET_TARGET_PROPERTIES(qweparse PROPERTIES
-  LINKER_LANGUAGE CXX)
 
 SET(CMAKE_CXX_FLAGS_DEBUG "-O0 -g3")
 
 ADD_DEFINITIONS(-DQWE_USE_STL)
 ADD_EXECUTABLE(qwetest qwetest.cpp)
-ADD_EXECUTABLE(qweparsetest qweparsetest.cpp)
 
-TARGET_LINK_LIBRARIES(qwetest qwexml)
+ADD_LIBRARY(qweparse SHARED qweparse.cpp)
+ADD_EXECUTABLE(qweparsetest qweparsetest.cpp)
 TARGET_LINK_LIBRARIES(qweparsetest qweparse)
 
 ADD_TEST(NAME qwetest
