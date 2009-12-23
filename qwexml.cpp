@@ -83,9 +83,6 @@ namespace qwe {
         attributes = new AttrList();
     }
 
-    /**
-     * Deep copy of existing element node.
-     */
     ElementNode::ElementNode(ElementNode &n)
     {
         name = n.name;
@@ -99,13 +96,11 @@ namespace qwe {
     }
 
     /**
-     * Add new attribute to element.
+     * @note Double memory allocation occurs here because list copies
+     * all data!
      */
     void ElementNode::add_attribute(std::string name, std::string value)
     {
-        /// @note
-        /// Double memory allocation, because list copies all
-        /// data!
         attributes->push_item(new AttrNode(name, value));
     }
 
@@ -114,18 +109,12 @@ namespace qwe {
         attributes->push_item(n);
     }
 
-    /**
-     * Add new child element node to element.
-     */
     void ElementNode::add_child(ElementNode *n)
     {
         children->push_item(n);
         ((ElementNode *)(last_child()))->parent = this;
     }
 
-    /**
-     * Add new child text node to element.
-     */
     void ElementNode::add_child(TextNode *n)
     {
         children->push_item(n);
@@ -142,9 +131,6 @@ namespace qwe {
         return !(attributes->is_empty());
     }
 
-    /**
-     * Return plain name of element.
-     */
     std::string ElementNode::get_name(void)
     {
         return name;
@@ -156,12 +142,17 @@ namespace qwe {
     }
 
     /**
-     * std::string of element node with all attributes and children.
+     * Return printable string of element tag with attributes, then
+     * recursively traverse all children and add their printable
+     * strings.
      */
     std::string ElementNode::get_printable(void)
     {
         std::string s = std::string();
+        /// Opening tag
         s += "<" + get_name();
+
+        /// Attributes
         if (has_attributes())
         {
             s += " ";
@@ -178,6 +169,8 @@ namespace qwe {
             }
         }
         s += ">";
+
+        /// Children
         if (has_children())
         {
             NodeList::StlIterator i = children_begin(), e = children_end();
@@ -187,6 +180,8 @@ namespace qwe {
                 i++;
             }
         }
+
+        /// Closing tag
         s+= "</" + get_name() + ">";
         return s;
     }
@@ -221,9 +216,6 @@ namespace qwe {
         return attributes->end();
     }
 
-    /**
-     * Convinience accessor.
-     */
     XmlNode* ElementNode::first_child(void)
     {
         return children->first_item();
