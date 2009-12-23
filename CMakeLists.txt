@@ -6,10 +6,15 @@ PROJECT(qwexml)
 SET(CMAKE_CXX_FLAGS_DEBUG "-O0 -g3")
 
 ADD_DEFINITIONS(-DQWE_USE_STL)
-ADD_EXECUTABLE(qwetest qwetest.cpp)
 
+ADD_LIBRARY(qwexml SHARED qwexml.cpp)
 ADD_LIBRARY(qweparse SHARED qweparse.cpp)
+
+ADD_EXECUTABLE(qwetest qwetest.cpp)
 ADD_EXECUTABLE(qweparsetest qweparsetest.cpp)
+
+TARGET_LINK_LIBRARIES(qwetest qwexml)
+TARGET_LINK_LIBRARIES(qweparse qwexml)
 TARGET_LINK_LIBRARIES(qweparsetest qweparse)
 
 ADD_TEST(NAME qwetest

@@ -25,15 +25,9 @@ namespace qwe {
         XmlNode* parent;
 
     public:
-        XmlNode(void)
-        {
-            parent = 0;
-        }
+        XmlNode(void);
 
-        XmlNode* get_parent(void)
-        {
-            return parent;
-        }
+        XmlNode* get_parent(void);
 
         virtual std::string get_printable(void) = 0;
 
@@ -59,37 +53,26 @@ namespace qwe {
         std::string str;
 
     public:
-        TextNode(std::string s)
-            :str(s)
-        {}
+        /**
+         * Constructs TextNode object with given contents.
+         */
+        TextNode(std::string s);
 
-        TextNode(TextNode &n)
-        {
-            str = n.str;
-        }
+        TextNode(TextNode &n);
+
+        TextNode* _copy(void);
+        
+        /**
+         * Returns raw contents of text node.
+         */
+        std::string get_contents(void);
+
+        void set_contents(std::string s);
 
         /**
-         * Raw contents of text node.
+         * Returns printable representation of text node contents.
          */
-        std::string get_contents(void)
-        {
-            return str;
-        }
-
-        void set_contents(std::string s)
-        {
-            str = s;
-        }
-
-        std::string get_printable(void)
-        {
-            return get_contents();
-        }
-
-        TextNode* _copy(void)
-        {
-            return new TextNode(*this);
-        }
+        std::string get_printable(void);
     };
 
     /**
@@ -103,216 +86,99 @@ namespace qwe {
             std::string name;
             std::string value;
         public:
-            AttrNode(std::string n, std::string v)
-                :name(n), value(v)
-            {}
+            AttrNode(std::string n, std::string v);
 
-            AttrNode(AttrNode &n)
-            {
-                name = n.name;
-                value = n.value;
-            }
+            AttrNode(AttrNode &n);
 
-            AttrNode* _copy(void)
-            {
-                return new AttrNode(*this);
-            }
+            AttrNode* _copy(void);
 
-            std::string get_name(void)
-            {
-                return name;
-            }
+            std::string get_name(void);
 
-            std::string get_value(void)
-            {
-                return value;
-            }
+            std::string get_value(void);
 
-            void set_value(std::string &v)
-            {
-                value = v;
-            }
+            void set_value(std::string &v);
         };
         typedef List <AttrNode> AttrList;
 
+        /**
+         * Name of XML element.
+         */
         std::string name;
+        
         NodeList *children;
         AttrList *attributes;
 
     public:
-        ElementNode(void)
-        {
-            children = new NodeList();
-            attributes = new AttrList();
-        }
-
-        ElementNode(std::string s)
-            :name(s)
-        {
-            children = new NodeList();
-            attributes = new AttrList();
-        }
-
+        ElementNode(void);
+        
+        ElementNode(std::string s);
+        
         /**
-         * Deep copy of existing element node.
+         * Performs a deep copy of existing element node.
          */
-        ElementNode(ElementNode &n)
-        {
-            name = n.name;
-            children = new NodeList(*n.children);
-            attributes = new AttrList(*n.attributes);
-        }
+        ElementNode(ElementNode &n);
+
+        ElementNode* _copy(void);
 
         /**
-         * Add new attribute to element.
+         * Adds new attribute to element.
          */
-        void add_attribute(std::string name, std::string value)
-        {
-            /// @note
-            /// Double memory allocation, because list copies all
-            /// data!
-            attributes->push_item(new AttrNode(name, value));
-        }
-
-        void add_attribute(AttrNode *n)
-        {
-            attributes->push_item(n);
-        }
-
+        void add_attribute(std::string name, std::string value);
+        
+        void add_attribute(AttrNode *n);
+        
         /**
-         * Add new child element node to element.
+         * Adds new child element node to element.
          */
-        void add_child(ElementNode *n)
-        {
-            children->push_item(n);
-            ((ElementNode *)(last_child()))->parent = this;
-        }
-
+        void add_child(ElementNode *n);
+        
         /**
-         * Add new child text node to element.
+         * Adds new child text node to element.
          */
-        void add_child(TextNode *n)
-        {
-            children->push_item(n);
-            ((TextNode *)(last_child()))->parent = this;
-        }
-
-        bool has_children(void)
-        {
-            return !(children->is_empty());
-        }
-
-        bool has_attributes(void)
-        {
-            return !(attributes->is_empty());
-        }
-
+        void add_child(TextNode *n);
+        
+        bool has_children(void);
+        
+        bool has_attributes(void);
+        
         /**
-         * Return plain name of element.
+         * Returns plain name of element.
          */
-        std::string get_name(void)
-        {
-            return name;
-        }
-
-        void set_name(std::string s)
-        {
-            name = s;
-        }
-
+        std::string get_name(void);
+        
+        void set_name(std::string s);
+        
         /**
-         * std::string of element node with all attributes and children.
+         * Returns printable representation of element node with all
+         * attributes and children.
          */
-        std::string get_printable(void)
-        {
-            std::string s = std::string();
-            s += "<" + get_name();
-            if (has_attributes())
-            {
-                s += " ";
-                AttrList::StlIterator i = attributes_begin(), e = attributes_end();
-                bool first = true;
-                while (i != e)
-                {
-                    if (!first)
-                        s += " ";
-                    first = false;
-                    s += (*i)->get_name();
-                    s += "=\"" + (*i)->get_value() +"\"";
-                    i++;
-                }
-            }
-            s += ">";
-            if (has_children())
-            {
-                NodeList::StlIterator i = children_begin(), e = children_end();
-                while (i != e)
-                {
-                    s += (*i)->get_printable();
-                    i++;
-                }
-            }
-            s+= "</" + get_name() + ">";
-            return s;
-        }
-
+        std::string get_printable(void);
+        
         /**
-         * STL-style iterators for children
+         * Iterators for children
          *
          * @todo Boilerplate code.
          */
-        NodeList::StlIterator children_begin(void)
-        {
-            return children->begin();
-        }
+        NodeList::StlIterator children_begin(void);
+                
+        NodeList::StlIterator children_end(void);
         
-        NodeList::StlIterator children_end(void)
-        {
-            return children->end();
-        }
-
-        NodeList::StlIterator children_rbegin(void)
-        {
-            return children->rbegin();
-        }
-
-        NodeList::StlIterator children_rend(void)
-        {
-            return children->rend();
-        }
-
-        AttrList::StlIterator attributes_begin(void)
-        {
-            return attributes->begin();
-        }
-
-        AttrList::StlIterator attributes_end(void)
-        {
-            return attributes->end();
-        }
-
+        NodeList::StlIterator children_rbegin(void);
+        
+        NodeList::StlIterator children_rend(void);
+        
+        AttrList::StlIterator attributes_begin(void);
+        
+        AttrList::StlIterator attributes_end(void);
+        
         /**
-         * Convinience accessor.
+         * Convinience accessors.
+         *
+         * Element children are text nodes and/or other elements.
          */
-        XmlNode* first_child(void)
-        {
-            return children->first_item();
-        }
-
-        XmlNode* last_child(void)
-        {
-            return children->last_item();
-        }
-
-        AttrNode* first_attribute(void)
-        {
-            return attributes->first_item();
-        }
-
-        ElementNode* _copy(void)
-        {
-            return new ElementNode(*this);
-        }
+        XmlNode* first_child(void);
+        XmlNode* last_child(void);
+        AttrNode* first_attribute(void);
     };
 }
 #endif
