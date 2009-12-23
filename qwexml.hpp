@@ -99,7 +99,6 @@ namespace qwe {
 
     /**
      * Element node with attributes and children.
-     *
      */
     class ElementNode : public XmlNode {
     private:
@@ -124,10 +123,13 @@ namespace qwe {
         ElementNode* _copy(void);
 
         /**
-         * Adds new attribute to element.
+         * Adds new attribute to element provided its key and value.
          */
         void add_attribute(std::string name, std::string value);
-        
+
+        /**
+         * Adds new attribute using a pointer to existing AttrNode object.
+         */
         void add_attribute(AttrNode *n);
         
         /**
