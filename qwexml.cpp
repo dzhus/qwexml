@@ -40,32 +40,32 @@ namespace qwe {
         return new TextNode(*this);
     }
 
-    ElementNode::AttrNode::AttrNode(std::string n, std::string v)
+    AttrNode::AttrNode(std::string n, std::string v)
         :name(n), value(v)
     {}
 
-    ElementNode::AttrNode::AttrNode(AttrNode &n)
+    AttrNode::AttrNode(AttrNode &n)
     {
         name = n.name;
         value = n.value;
     }
 
-    ElementNode::AttrNode* ElementNode::AttrNode::_copy(void)
+    AttrNode* AttrNode::_copy(void)
     {
         return new AttrNode(*this);
     }
 
-    std::string ElementNode::AttrNode::get_name(void)
+    std::string AttrNode::get_name(void)
     {
         return name;
     }
 
-    std::string ElementNode::AttrNode::get_value(void)
+    std::string AttrNode::get_value(void)
     {
         return value;
     }
 
-    void ElementNode::AttrNode::set_value(std::string &v)
+    void AttrNode::set_value(std::string &v)
     {
         value = v;
     }
@@ -211,12 +211,12 @@ namespace qwe {
         return children->rend();
     }
 
-    ElementNode::AttrList::StlIterator ElementNode::attributes_begin(void)
+    AttrList::StlIterator ElementNode::attributes_begin(void)
     {
         return attributes->begin();
     }
 
-    ElementNode::AttrList::StlIterator ElementNode::attributes_end(void)
+    AttrList::StlIterator ElementNode::attributes_end(void)
     {
         return attributes->end();
     }
@@ -234,7 +234,7 @@ namespace qwe {
         return children->last_item();
     }
 
-    ElementNode::AttrNode* ElementNode::first_attribute(void)
+    AttrNode* ElementNode::first_attribute(void)
     {
         return attributes->first_item();
     }

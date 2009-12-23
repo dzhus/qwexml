@@ -76,30 +76,33 @@ namespace qwe {
     };
 
     /**
+     * Element attribute class.
+     */
+    class AttrNode {
+    private:
+        std::string name;
+        std::string value;
+    public:
+        AttrNode(std::string n, std::string v);
+        
+        AttrNode(AttrNode &n);
+        
+        AttrNode* _copy(void);
+        
+        std::string get_name(void);
+        
+        std::string get_value(void);
+        
+        void set_value(std::string &v);
+    };
+    typedef List <AttrNode> AttrList;
+
+    /**
      * Element node with attributes and children.
      *
      */
     class ElementNode : public XmlNode {
     private:
-        class AttrNode {
-        private:
-            std::string name;
-            std::string value;
-        public:
-            AttrNode(std::string n, std::string v);
-
-            AttrNode(AttrNode &n);
-
-            AttrNode* _copy(void);
-
-            std::string get_name(void);
-
-            std::string get_value(void);
-
-            void set_value(std::string &v);
-        };
-        typedef List <AttrNode> AttrList;
-
         /**
          * Name of XML element.
          */
