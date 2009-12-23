@@ -12,12 +12,6 @@
  */
 
 namespace qwe {
-    
-    class Listable {
-    public:
-        virtual Listable* _copy(void) = 0;
-    };
-
     /**
      * Heterogeneous list.
      *
