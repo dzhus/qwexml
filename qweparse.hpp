@@ -245,7 +245,7 @@ namespace qwe {
         friend class XmlParser;
     public:
         /**
-         * Construct new lexer object using a list of tokens.
+         * Constructs new lexer object using a list of tokens.
          */
         XmlLexer(TokenList *l);
 
