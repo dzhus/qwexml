@@ -7,6 +7,8 @@ namespace qwe {
 
     /**
      * Produce error message and exit with error code.
+     *
+     * @todo Use exceptions instead of this.
      */
     void error(error_type n)
     {
@@ -24,6 +26,9 @@ namespace qwe {
         case UNEXPECTED_CLOSE:
             std::cout << "Unexpected closing tag" << std::endl;
             exit(UNEXPECTED_CLOSE);
+        case MULTI_TOP:
+            std::cout << "Multiple root elements" << std::endl;
+            exit(MULTI_TOP);
         }
     }
 
@@ -375,6 +380,10 @@ namespace qwe {
 
         while (begin != end)
         {
+            /// Prohibit multiple top-level elements
+            if (p.top() && p.is_finished())
+                error(MULTI_TOP);
+        
             current = *(begin);
             switch (current->get_type())
             {
@@ -426,16 +435,6 @@ namespace qwe {
     bool XmlParser::is_finished(void)
     {
         return stack->is_empty();
-    }
-
-    NodeList::StlIterator XmlParser::top_begin(void)
-    {
-        return root->children_begin();
-    }
-    
-    NodeList::StlIterator XmlParser::top_end(void)
-    {
-        return root->children_end();
     }
 
     XmlNode* XmlParser::top(void)

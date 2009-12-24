@@ -9,7 +9,7 @@ namespace qwe {
 
     enum token_type {NONE, TAG, SPACE, TEXT};
 
-    enum error_type {UNKNOWN_TOKEN, TAG_ERROR, UNBALANCED_TAG, UNEXPECTED_CLOSE};
+    enum error_type {UNKNOWN_TOKEN, TAG_ERROR, UNBALANCED_TAG, UNEXPECTED_CLOSE, MULTI_TOP};
 
     /**
      * Simple error handler.
@@ -301,12 +301,9 @@ namespace qwe {
         XmlLexer *lexer;
 
         /**
-         * Root element contains all top-level nodes for parsed XML.
+         * Root element contains just top-level element of the XML
+         * document.
          *
-         * @note Strictly speaking, XML contains just one top-level
-         * element of the XML document.
-         *
-         * @see XmlParser::top_begin(), XmlParser::top_end()
          * @see XmlParser::top()
          */
         ElementNode *root;
@@ -344,12 +341,6 @@ namespace qwe {
          * completely read from opening to closing tag
          */
         bool is_finished(void);
-
-        /**
-         * Iterator for a list of top-level elements of parsed XML.
-         */
-        NodeList::StlIterator top_begin(void);
-        NodeList::StlIterator top_end(void);
 
         /**
          * First top-level element.
