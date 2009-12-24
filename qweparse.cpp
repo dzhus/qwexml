@@ -344,7 +344,7 @@ namespace qwe {
      */
     bool isxmltext::operator () (char c)
     {
-        return ((isgraph(c) || isspace(c)) &&           \
+        return ((isgraph(c) || isspace(c)) &&   \
                 !((c == '<') || (c == '&')));
     }
 
