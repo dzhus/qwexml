@@ -339,6 +339,8 @@ namespace qwe {
 
     /**
      * Return true if character may belong to text node.
+     *
+     * @see http://www.w3.org/TR/REC-xml/#dt-chardata
      */
     bool isxmltext::operator () (char c)
     {
