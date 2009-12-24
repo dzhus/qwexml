@@ -335,7 +335,6 @@ namespace qwe {
         xml_tokens->push_item(new qwe::TextToken());
         lexer = new XmlLexer(xml_tokens);
 
-        started = false;
         stack = new List<TagToken>;
         current_node = root = new ElementNode("T");
     }
