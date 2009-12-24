@@ -261,19 +261,29 @@ namespace qwe {
         TokenList::StlIterator end(void);
     };
 
+   /**
+    * XML parser class.
+    *
+    * Utilizes XmlLexer to parse input stream into a list of tokens
+    * which are translated into a tree of ElementNode objects.
+    *
+    * Portions of XML data are fed to parser using input operator.
+    * XmlParser::is_finished() method is used to check if parsing is
+    * complete.
+    */
     class XmlParser
     {
     private:
         XmlLexer *lexer;
 
         /**
-         * Iterators pointing to beginning and end of tokens processed
-         * so far.
-         */
-        TokenList::StlIterator begin, end;
-
-        /**
-         * Parsed XML tree.
+         * Root element contains all top-level nodes for parsed XML.
+         *
+         * @note Strictly speaking XML contains just one top-level element of the
+         * XML document.
+         *
+         * @see XmlParser::top_begin(), XmlParser::top_end()
+         * @see XmlParser::top()
          */
         ElementNode *root;
 
@@ -282,20 +292,54 @@ namespace qwe {
          */
         bool started;
 
-    public:
-        XmlParser(void);
+        /**
+         * Stack of open tag elements.
+         */
+        List<TagToken> *stack;
 
         /**
-         * Reads XML data from input stream and builds
+         * XML element currently being read.
+         */
+        ElementNode *current_node;
+
+    public:
+        XmlParser(void);
+        
+        /**
+         * Reads a portion of XML data from input stream and updates
          * XmlParser::root.
+         *
+         * New elements are added into the tree as opening tags occur
+         * in the input stream.
+         *
+         * @see XmlParser::is_finished()
          */
         friend std::istream& operator >>(std::istream &in, XmlParser &p);
         
+        /**
+         * Checks if parsing is complete.
+         *
+         * @return True if current top-level element has been
+         * completely read from opening to closing tag
+         */
+        bool is_finished(void);
+
         /**
          * Iterator for a list of tokens read by underlying lexer.
          */
         TokenList::StlIterator tokens_begin(void);
         TokenList::StlIterator tokens_end(void);
+
+        /**
+         * Iterator for a list of top-level elements of parsed XML.
+         */
+        NodeList::StlIterator top_begin(void);
+        NodeList::StlIterator top_end(void);
+
+        /**
+         * First top-level element.
+         */
+        XmlNode* top(void);
     };
 }
 #endif

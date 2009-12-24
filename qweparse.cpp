@@ -286,6 +286,10 @@ namespace qwe {
         return false;
     }
 
+    /**
+     * Read one token from input stream and add it to XmlLexer::tokens
+     * list.
+     */
     std::istream& operator >>(std::istream &in, XmlLexer &l)
     {
         /// Iterators over the list of known tokens
@@ -293,9 +297,8 @@ namespace qwe {
         end = l.known->end();
         while (in.peek() != -1)
         {
+            /// Choose and read one full token
             l.current = l.choose_token(in);
-
-            /// Read one full token
             in >> *(l.current);
             
             /// Store copy of fully read token
@@ -321,18 +324,21 @@ namespace qwe {
 
     XmlParser::XmlParser(void)
     {
+        /// Setup lexer
         qwe::TokenList *xml_tokens = new qwe::TokenList();
         xml_tokens->push_item(new qwe::TagToken());
         xml_tokens->push_item(new qwe::SpaceToken());
         xml_tokens->push_item(new qwe::TextToken());
-        
         lexer = new XmlLexer(xml_tokens);
+
+        stack = new List<TagToken>;
+        root = new ElementNode("T");
+        started = false;
     }
 
     std::istream& operator >>(std::istream &in, XmlParser &p)
     {            
-        TokenList stack;
-        ElementNode *current_node;
+        TokenList::StlIterator begin, end;
 
         // Temporary tokens
         Token *current;
@@ -342,61 +348,68 @@ namespace qwe {
 
         in >> *(p.lexer);
 
-        /// 
         if (!p.started)
         {
-            p.begin = p.lexer->begin();
             p.started = true;
+            p.current_node = p.root;
         }
 
-        /// @todo Fix this
-        current_node = p.root = new ElementNode("XML");
+        begin = p.lexer->begin();
+        end = p.lexer->end();
 
-        p.end = p.lexer->end();
-
-        while (p.begin != p.end)
+        while (begin != end)
         {
-            current = *(p.begin);
+            current = *(begin);
             switch (current->get_type())
             {
             case TAG:
                 current_tag = (TagToken *)(current);
+                /// Closing tag must occur only if opening tag with
+                /// the same name is on the top of XmlParser::stack.
                 if (current_tag->is_closing())
                 {
-                    if (stack.is_empty())
+                    if (p.stack->is_empty())
                         error(UNEXPECTED_CLOSE);
-                    else if ((current_tag->get_name()) ==            \
-                             ((TagToken *)(stack.last_item()))->get_name())
+                    else if ((current_tag->get_name()) ==       \
+                             p.stack->last_item()->get_name())
                     {
-                        // Tag successfully closed
-                        stack.pop_item();
-                        current_node = (ElementNode *)(current_node->get_parent());
+                        p.stack->pop_item();
+                        p.current_node = (ElementNode *)(p.current_node->get_parent());
                     }
                     else
                         error(UNBALANCED_TAG);
                 }
                 else
                 {
-                    current_node->add_child(new ElementNode(current_tag->get_name()));
+                    p.current_node->add_child(new ElementNode(current_tag->get_name()));
 
-                    // Expect inner contents for non-empty tags
+                    /// Empty tags are not pushed to stack because
+                    /// they don't need to be closed
                     if (!current_tag->is_empty())
                     {
-                        stack.push_item(current_tag);
-                        current_node = (ElementNode *)(current_node->last_child());
+                        p.stack->push_item(current_tag);
+                        p.current_node = (ElementNode *)(p.current_node->last_child());
                     }
                 }
                 break;
 
             case TEXT:
                 current_text = (TextToken *)(current);
-                current_node->add_child(new TextNode(current_text->get_contents()));
+                p.current_node->add_child(new TextNode(current_text->get_contents()));
                 break;
             }
-            p.begin++;
+            begin++;
         }
-        std::cout << p.root->get_printable();
         return in;
+    }
+
+    /**
+     * If stack is not empty, parser expects more closing tags to
+     * come.
+     */
+    bool XmlParser::is_finished(void)
+    {
+        return stack->is_empty();
     }
 
     TokenList::StlIterator XmlParser::tokens_begin(void)
@@ -407,5 +420,20 @@ namespace qwe {
     TokenList::StlIterator XmlParser::tokens_end(void)
     {
         return lexer->tokens->end();
+    }
+
+    NodeList::StlIterator XmlParser::top_begin(void)
+    {
+        return root->children_begin();
+    }
+    
+    NodeList::StlIterator XmlParser::top_end(void)
+    {
+        return root->children_end();
+    }
+
+    XmlNode* XmlParser::top(void)
+    {
+        return root->first_child();
     }
 }
