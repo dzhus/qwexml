@@ -163,6 +163,7 @@ namespace qwe {
         }
 
         List(List &l)
+            :head(0), tail(0)
         {
             _init_sentinels();
 
