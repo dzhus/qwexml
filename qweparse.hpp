@@ -284,8 +284,8 @@ namespace qwe {
         /**
          * Root element contains all top-level nodes for parsed XML.
          *
-         * @note Strictly speaking XML contains just one top-level element of the
-         * XML document.
+         * @note Strictly speaking, XML contains just one top-level
+         * element of the XML document.
          *
          * @see XmlParser::top_begin(), XmlParser::top_end()
          * @see XmlParser::top()
