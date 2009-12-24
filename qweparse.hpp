@@ -51,7 +51,7 @@ namespace qwe {
         token_type type;
     public:
         /**
-         * Prepare to consume next portion of character data.
+         * Prepares token to consume next portion of character data.
          */
         virtual void flush(void);
 
@@ -255,6 +255,11 @@ namespace qwe {
         friend std::istream& operator >>(std::istream &in, XmlLexer &l);
 
         /**
+         * Clears list of read tokens.
+         */
+        void flush(void);
+
+        /**
          * Iterator for the list of read tokens.
          */
         TokenList::StlIterator begin(void);
@@ -294,6 +299,9 @@ namespace qwe {
 
         /**
          * Stack of open tag elements.
+         *
+         * @todo Balancing is checked using tag names, so a list of
+         * strings will be sufficient here.
          */
         List<TagToken> *stack;
 
@@ -301,7 +309,6 @@ namespace qwe {
          * XML element currently being read.
          */
         ElementNode *current_node;
-
     public:
         XmlParser(void);
         
@@ -323,12 +330,6 @@ namespace qwe {
          * completely read from opening to closing tag
          */
         bool is_finished(void);
-
-        /**
-         * Iterator for a list of tokens read by underlying lexer.
-         */
-        TokenList::StlIterator tokens_begin(void);
-        TokenList::StlIterator tokens_end(void);
 
         /**
          * Iterator for a list of top-level elements of parsed XML.

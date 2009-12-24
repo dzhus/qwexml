@@ -311,6 +311,10 @@ namespace qwe {
         return in;
     }
 
+    void XmlLexer::flush(void)
+    {
+        tokens->clear();        
+    }
 
     TokenList::StlIterator XmlLexer::begin(void)
     {
@@ -331,9 +335,9 @@ namespace qwe {
         xml_tokens->push_item(new qwe::TextToken());
         lexer = new XmlLexer(xml_tokens);
 
-        stack = new List<TagToken>;
-        root = new ElementNode("T");
         started = false;
+        stack = new List<TagToken>;
+        current_node = root = new ElementNode("T");
     }
 
     std::istream& operator >>(std::istream &in, XmlParser &p)
@@ -346,13 +350,10 @@ namespace qwe {
         TextToken *current_text;
         SpaceToken *current_space;
 
+        /// Forget tokens read during last feeding and consume new
+        /// portion
+        p.lexer->flush();
         in >> *(p.lexer);
-
-        if (!p.started)
-        {
-            p.started = true;
-            p.current_node = p.root;
-        }
 
         begin = p.lexer->begin();
         end = p.lexer->end();
@@ -410,16 +411,6 @@ namespace qwe {
     bool XmlParser::is_finished(void)
     {
         return stack->is_empty();
-    }
-
-    TokenList::StlIterator XmlParser::tokens_begin(void)
-    {
-        return lexer->tokens->begin();
-    }
-    
-    TokenList::StlIterator XmlParser::tokens_end(void)
-    {
-        return lexer->tokens->end();
     }
 
     NodeList::StlIterator XmlParser::top_begin(void)

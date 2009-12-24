@@ -214,6 +214,21 @@ namespace qwe {
         }
 
         /**
+         * Remove all items from list.
+         */
+        void clear(void)
+        {
+            StlIterator begin, end;
+            begin = rbegin();
+            end = rend();
+            while (begin != end)
+            {
+                pop_item();
+                begin--;
+            }
+        }
+
+        /**
          * @internal When list is empty, immediately point to tail
          * sentinel, so that <pre>begin() == end()</pre> holds.
          */
