@@ -175,7 +175,7 @@ namespace qwe {
         std::string current_key;
 
         /**
-         * Key of attribute currently being read.
+         * Value of attribute currently being read.
          */
         std::string current_value;
 
