@@ -413,13 +413,15 @@ namespace qwe {
      * Read next processing intruction. This implementation does
      * nothing except stroing PI contents in PiToken::contents. The
      * procedure is very permissive, allowing everything for which
-     * ispicontent holds to be between PI delimeters. XML prolog is
+     * is_picontent() holds to be between PI delimeters. XML prolog is
      * treated like a PI.
      *
+     * Examples of PI's recognized by this implementation: 
      @verbatim
      <?xml version="1.0"?>
      <?some processing instruction?>
 @endverbatim
+
      @dot
      digraph pi {
      node [shape=rectangle, fontname="sans-serif", fontsize=14];
@@ -429,7 +431,7 @@ namespace qwe {
      START -> OPEN [label="<"];
      OPEN -> CONTENTS [label="?"];
 
-     CONTENTS -> CONTENTS [label="[[:ispicontent():]]"];
+     CONTENTS -> CONTENTS [label="[[:is_picontent():]]"];
      CONTENTS -> CLOSE [label="?"];
      CLOSE -> END [label=">"];
      END [shape="oval"];
