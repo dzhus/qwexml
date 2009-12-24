@@ -17,10 +17,10 @@ TARGET_LINK_LIBRARIES(qwetest qwexml)
 TARGET_LINK_LIBRARIES(qweparse qwexml)
 TARGET_LINK_LIBRARIES(qweparsetest qweparse)
 
-ADD_TEST(NAME qwetest
+ADD_TEST(NAME internals
   COMMAND qwetest)
-ADD_TEST(NAME qweparsetest
-  COMMAND qweparsetest)
+ADD_TEST(NAME parsing
+  COMMAND iparse-test.py)
 ENABLE_TESTING()
 
 ADD_CUSTOM_TARGET(doc doxygen Doxyfile)
