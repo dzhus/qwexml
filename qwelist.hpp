@@ -194,6 +194,11 @@ namespace qwe {
             head->prev = head_sentinel;
         }
 
+        /**
+         * Remove last entry from list.
+         *
+         * @todo Fix leak
+         */
         void pop_item()
         {
             if (tail->prev == head_sentinel)
