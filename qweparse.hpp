@@ -107,7 +107,10 @@ namespace qwe {
         /**
          * Possible states of FA used to read a tag from stream.
          */
-        enum state {START, OPEN, SLASH, NAME, CLOSE_NAME, ESPC, EMPTY, END};
+        enum state {START, OPEN, SLASH, NAME, CLOSE_NAME, 
+                    ESPC, CESPC,
+                    KEY, EQUAL, VALUE, END_V,
+                    EMPTY, END};
 
         /**
          * Current state of tag-reading FA.
@@ -133,6 +136,16 @@ namespace qwe {
          * Add one character to element name.
          */
         void add_to_name(char c);
+    
+        /**
+         * Key of attribute currently being read.
+         */
+        std::string current_key;
+
+        /**
+         * Key of attribute currently being read.
+         */
+        std::string current_value;
 
     public:
         void flush(void);

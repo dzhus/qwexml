@@ -148,22 +148,39 @@ namespace qwe {
 
      @dot
      digraph tag {
+     layout="dot";
      node [shape=rectangle, fontname="sans-serif", fontsize=14];
-     edge [fontname="sans-serif", fontsize=10];
+     edge [fontname="serif", fontsize=10];
+     nodesep=0.2;
+
      START [shape="oval"];
      START -> OPEN [label="<"];
      OPEN -> SLASH [label="/"];
+
+     ESPC -> KEY [label="[[:alnum:]]"];
+     KEY -> KEY [label="[[:alnum:]]"];
+     KEY -> EQUAL [label="="];
+     EQUAL -> VALUE [label="\""];
+     VALUE -> VALUE [label="[[:alnum:]]"];
+     VALUE -> END_V [label="\""];
+     END_V -> ESPC [label="[[:space:]]"];
+     END_V -> EMPTY [label="/"];
+     END_V -> END [label=">"];
+
+     NAME -> ESPC [label="[[:space:]]"];
      OPEN -> NAME [label="[[:alnum:]]"];
      SLASH -> CLOSE_NAME [label="[[:alnum:]]"];
      CLOSE_NAME -> CLOSE_NAME [label="[[:alnum:]]"];
      NAME -> NAME [label="[[:alnum:]]"];
      CLOSE_NAME -> END [label=">"];
      NAME -> END [label=">"];
-     NAME -> ESPC [label="[[:space:]]"];
+     NAME -> EMPTY [label="/"];
+     
      ESPC -> END [label=">"];
      ESPC -> EMPTY [label="/"];
      EMPTY -> END [label=">"];
-     CLOSE_NAME -> ESPC [label="[[:space:]]"];
+     CLOSE_NAME -> CESPC [label="[[:space:]]"];
+     CESPC -> END [label=">"];
      END [shape="oval"];
      }
      @enddot
@@ -216,7 +233,7 @@ namespace qwe {
                 else if (c == '>')
                     current_state = END;
                 else if (isspace(c))
-                    current_state = ESPC;
+                    current_state = CESPC;
                 else
                     accepted = false;
                 break;
@@ -227,6 +244,8 @@ namespace qwe {
                     current_state = END; 
                 else if (isspace(c))
                     current_state = ESPC;
+                else if (c == '/')
+                    current_state = EMPTY;
                 else
                     accepted = false;
                 break;
@@ -238,6 +257,52 @@ namespace qwe {
                     current_state = EMPTY;
                     empty = true;
                 }
+                else if (isalpha(c))
+                {
+                    current_state = KEY;
+                    current_key += c;
+                }
+                else
+                    accepted = false;
+                break;
+            case KEY:
+                if (isalpha(c))
+                    current_key += c;
+                else if (c == '=')
+                    current_state = EQUAL;
+                else
+                    accepted = false;
+                break;
+            case EQUAL:
+                if (c == '"')
+                    current_state = VALUE;
+                else
+                    accepted = false;
+                break;
+            case VALUE:
+                if (isalpha(c))
+                    current_value += c;
+                else if (c == '"')
+                {
+                    element->add_attribute(current_key, current_value);
+                    current_state = END_V;
+                }
+                else
+                    accepted = false;
+                break;
+            case END_V:
+                if (isspace(c))
+                    current_state = ESPC;
+                else if (c == '/')
+                    current_state = EMPTY;
+                else if (c == '>')
+                    current_state = END;
+                else
+                    accepted = false;
+                break;
+            case CESPC:
+                if (c == '>')
+                    current_state = END;
                 else
                     accepted = false;
                 break;
