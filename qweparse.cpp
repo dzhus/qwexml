@@ -29,6 +29,9 @@ namespace qwe {
         case MULTI_TOP:
             std::cout << "Multiple root elements" << std::endl;
             exit(MULTI_TOP);
+        case PI_ERROR:
+            std::cout << "Error while reading PI" << std::endl;
+            exit(PI_ERROR);
         }
     }
 
@@ -329,6 +332,128 @@ namespace qwe {
         return false;
     }
 
+    void PiToken::flush(void)
+    {
+        Token::flush();
+        current_state = START;
+    }
+
+    PiToken::PiToken(void)
+    {
+        type = PI;
+        flush();
+    }
+    
+    PiToken::PiToken(PiToken &t)
+    {
+        type = PI;
+        flush();
+        contents = t.contents;
+    }
+
+    PiToken* PiToken::_copy(void)
+    {
+        return new PiToken(*this);
+    }
+
+    /**
+     * @return True if stream starts from @c <%
+     */
+    bool PiToken::can_eat(std::istream &in)
+    {
+        char pc, c;
+        pc = in.get();
+        c = in.peek();
+        in.putback(pc);
+
+        if ((pc == '<') && (c == '?'))
+            return true;
+        else
+            return false;
+    }
+
+    /**
+     * Read next processing intruction. This implementation does
+     * nothing except stroing PI contents in PiToken::contents. The
+     * procedure is very permissive, allowing everything for which
+     * isxmltext holds to be between PI delimeters. XML prolog is
+     * treated like a PI.
+     *
+     @verbatim
+     <?xml version="1.0"?>
+     <?some processing instruction?>
+@endverbatim
+     @dot
+     digraph pi {
+     node [shape=rectangle, fontname="sans-serif", fontsize=14];
+     edge [fontname="serif", fontsize=10];
+     
+     START [shape="oval"];
+     START -> OPEN [label="<"];
+     OPEN -> CONTENTS [label="?"];
+
+     CONTENTS -> CONTENTS [label="[[:isxmltext():]]"];
+     CONTENTS -> CLOSE [label="?"];
+     CLOSE -> END [label=">"];
+     END [shape="oval"];
+     }
+     @enddot
+     *
+     * @see http://www.w3.org/TR/REC-xml/#dt-pi
+     * @see http://www.w3.org/TR/REC-xml/#sec-prolog-dtd
+     */
+    bool PiToken::feed(std::istream &in)
+    {
+        char c;
+        isxmltext contents_test = isxmltext();
+        
+        while ((c = in.get()))
+        {
+            bool accepted = true;
+            
+            switch (current_state)
+            {
+            case START:
+                if (c == '<')
+                    current_state = OPEN;
+                else
+                    accepted = false;
+                break;
+            case OPEN:
+                if (c == '?')
+                    current_state = CONTENTS;
+                else
+                    accepted = false;
+                break;
+            case CONTENTS:
+                if (c == '?')
+                    current_state = CLOSE;
+                else if (!contents_test(c))
+                    accepted = false;
+                break;
+            case CLOSE:
+                if (c == '>')
+                    current_state = END;
+                else
+                    accepted = false;
+                break;
+            case END:
+                in.putback(c);
+                finished = true;
+                return true;
+            }
+
+            if (in.eof())
+                return true;
+            
+            if (accepted)
+                contents += c;
+            else
+                error(PI_ERROR);
+        }
+        return false;
+    }
+
     /**
      * Return true if character is space between XML nodes.
      */
@@ -427,6 +552,7 @@ namespace qwe {
     {
         /// Setup lexer
         qwe::TokenList *xml_tokens = new qwe::TokenList();
+        xml_tokens->push_item(new qwe::PiToken());
         xml_tokens->push_item(new qwe::TagToken());
         xml_tokens->push_item(new qwe::SpaceToken());
         xml_tokens->push_item(new qwe::TextToken());

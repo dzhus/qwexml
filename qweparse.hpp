@@ -7,9 +7,10 @@
 
 namespace qwe {
 
-    enum token_type {NONE, TAG, SPACE, TEXT};
+    enum token_type {NONE, TAG, SPACE, TEXT, PI};
 
-    enum error_type {UNKNOWN_TOKEN, TAG_ERROR, UNBALANCED_TAG, UNEXPECTED_CLOSE, MULTI_TOP};
+    enum error_type {UNKNOWN_TOKEN, TAG_ERROR, PI_ERROR,
+                     UNBALANCED_TAG, UNEXPECTED_CLOSE, MULTI_TOP};
 
     /**
      * Simple error handler.
@@ -171,6 +172,41 @@ namespace qwe {
          * Returns true if stream contains a tag.
          */
         bool can_eat(std::istream &in);
+    };
+    
+    /**
+     * Processing instruction token.
+     */
+    class PiToken : public Token {
+    private:
+        /**
+         * Possible states of FA used to read a PI from stream.
+         */
+        enum state {START, OPEN, CONTENTS, CLOSE, END};
+
+        /**
+         * Current state of PI-reading FA.
+         */
+        state current_state;
+
+    public:
+        void flush(void);
+
+        PiToken(void);
+
+        PiToken(PiToken &t);
+
+        PiToken* _copy(void);
+
+        /**
+         * Returns true if stream contains processing instruction.
+         */
+        bool can_eat(std::istream &in);
+        
+        /**
+         * Reads processing instruction from stream.
+         */     
+        bool feed(std::istream &in);
     };
 
     /**
