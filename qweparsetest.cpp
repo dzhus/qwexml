@@ -15,7 +15,7 @@ std::string finished_string(XmlParser *p)
 int main()
 {
     const int buf_size = 128;
-    
+
     XmlParser *p = new XmlParser();
     char buffer[buf_size];
     std::istringstream *is;
@@ -26,12 +26,11 @@ int main()
         is->str(buffer);
         *is >> *p;
 
-        if(p->top())
+        if (p->top())
         {
-            std::cout << "<< " << finished_string(p) << ": " << p->top()->get_printable();
-            std::cout << std::endl;
+            std::cout << ":: " << finished_string(p) << ": ";
+            std::cout << p->top()->get_printable() << std::endl;
         }
     }
     return 0;
 }
-
