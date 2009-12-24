@@ -293,11 +293,6 @@ namespace qwe {
         ElementNode *root;
 
         /**
-         * True if some tokens have been parsed.
-         */
-        bool started;
-
-        /**
          * Stack of open tag elements.
          *
          * @todo Balancing is checked using tag names, so a list of
