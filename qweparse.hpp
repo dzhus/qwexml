@@ -87,6 +87,9 @@ namespace qwe {
          * Must set Token::finished to true if read was complete.
          * Token must properly preserve its inner state in case of EOF
          * occuring while reading is in progress.
+         *
+         * Implementations must also add read contents to
+         * Token::contents.
          */
         virtual bool feed(std::istream &in) = 0;
 
@@ -99,6 +102,34 @@ namespace qwe {
 
         virtual Token* _copy(void) = 0;
     };
+
+    /**
+     * Returns true if character may be used in a tag name.
+     */
+    bool is_tagname(char c);
+
+    /**
+     * Returns true if character may be used in an attribute key name.
+     */
+    bool is_attkey(char c);
+
+    /**
+     * Returns true if character may be used in an attribute value.
+     */
+    bool is_attval(char c);
+
+
+    /**
+     * Returns true if character may be used in text nodes.
+     */
+    bool is_xmltext(char c);
+
+
+    /**
+     * Returns true if character may be used inside a processing
+     * instruction.
+     */
+    bool is_picontent(char c);
     
     /**
      * Token class for XML tags.
@@ -212,7 +243,7 @@ namespace qwe {
     /**
      * Functional class for determining space between XML tags.
      */
-    class isxmlspace {
+    class Fis_xmlspace {
     public:
         bool operator () (char c);
     };
@@ -220,7 +251,7 @@ namespace qwe {
     /**
      * Functional class for determining text node contents.
      */
-    class isxmltext {
+    class Fis_xmltext {
     public:
         bool operator () (char c);
     };
@@ -281,8 +312,8 @@ namespace qwe {
         }
     };
 
-    typedef SimpleToken<isxmltext, TEXT> TextToken;
-    typedef SimpleToken<isxmlspace, SPACE> SpaceToken;
+    typedef SimpleToken<Fis_xmltext, TEXT> TextToken;
+    typedef SimpleToken<Fis_xmlspace, SPACE> SpaceToken;
 
     typedef List <Token> TokenList;
 

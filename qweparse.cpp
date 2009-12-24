@@ -66,12 +66,39 @@ namespace qwe {
         return in;
     }
 
+
+    bool is_tagname(char c)
+    {
+        return isalnum(c);
+    }
+
+    bool is_attkey(char c)
+    {
+        return isalnum(c);
+    }
+
+    bool is_attval(char c)
+    {
+        return (is_xmltext(c) && !(c == '"'));
+    }
+   
+    bool is_xmltext(char c)
+    {
+        return ((isgraph(c) || isspace(c)) &&   \
+                !((c == '<') || (c == '&')));
+    }
+
+    bool is_picontent(char c)
+    {
+        return is_xmltext(c) && !((c == '?') || (c == '>'));
+    }
+
     void TagToken::flush(void)
     {
         Token::flush();
         current_state = START;
 
-        /// @todo Fix leak
+        /// @todo Fix leaks
         element = new ElementNode();
 
         closing = false;
@@ -129,10 +156,11 @@ namespace qwe {
      * following fields of TagToken object to appropriate values
      * describing properties of read tag:
      *
-     * - TagToken::contents: character data read from stream (like @c
+     * - TagToken::element: empty ElementNode object for read tag
+     *   (with attributes).
+     * 
+     * - TagToken::contents: raw character data read from stream (like @c
      *   &lt;sometag>);
-     *
-     * - TagToken::name: tag name (like @c sometag);
      *
      * - TagToken::closing;
      *
@@ -149,6 +177,13 @@ namespace qwe {
      ETag ::= '</' Name S? '>'
 @endverbatim
 
+     Functions is_tagname(), is_attkey() and is_attval() are used to
+     check if valid characters are used in XML tag names, attribute
+     keys and values.
+    
+     Description of tag-reading DFA follows. <code>[[:f():]]</code>
+     means «all characters @c c for which @c f(c) holds»
+
      @dot
      digraph tag {
      layout="dot";
@@ -160,21 +195,21 @@ namespace qwe {
      START -> OPEN [label="<"];
      OPEN -> SLASH [label="/"];
 
-     ESPC -> KEY [label="[[:alnum:]]"];
-     KEY -> KEY [label="[[:alnum:]]"];
+     ESPC -> KEY [label="[[:is_attkey():]]"];
+     KEY -> KEY [label="[[:is_attkey():]]"];
      KEY -> EQUAL [label="="];
      EQUAL -> VALUE [label="\""];
-     VALUE -> VALUE [label="[[:alnum:]]"];
+     VALUE -> VALUE [label="[[:is_attval():]]"];
      VALUE -> END_V [label="\""];
      END_V -> ESPC [label="[[:space:]]"];
      END_V -> EMPTY [label="/"];
      END_V -> END [label=">"];
 
      NAME -> ESPC [label="[[:space:]]"];
-     OPEN -> NAME [label="[[:alnum:]]"];
-     SLASH -> CLOSE_NAME [label="[[:alnum:]]"];
-     CLOSE_NAME -> CLOSE_NAME [label="[[:alnum:]]"];
-     NAME -> NAME [label="[[:alnum:]]"];
+     OPEN -> NAME [label="[[:is_tagname():]]"];
+     SLASH -> CLOSE_NAME [label="[[:is_tagname():]]"];
+     CLOSE_NAME -> CLOSE_NAME [label="[[:is_tagname():]]"];
+     NAME -> NAME [label="[[:is_tagname():]]"];
      CLOSE_NAME -> END [label=">"];
      NAME -> END [label=">"];
      NAME -> EMPTY [label="/"];
@@ -194,7 +229,7 @@ namespace qwe {
     bool TagToken::feed(std::istream &in)
     {
         char c;
-        
+   
         while ((c = in.get()))
         {
             bool accepted = true;
@@ -208,7 +243,7 @@ namespace qwe {
                     accepted = false;
                 break;
             case OPEN:
-                if (isalpha(c))
+                if (is_tagname(c))
                 {
                     add_to_name(c);
                     current_state = NAME;
@@ -222,7 +257,7 @@ namespace qwe {
                     accepted = false;
                 break;
             case SLASH:
-                if (isalpha(c))
+                if (is_tagname(c))
                 {
                     add_to_name(c);
                     current_state = CLOSE_NAME;
@@ -231,7 +266,7 @@ namespace qwe {
                     accepted = false;
                 break;
             case CLOSE_NAME:
-                if (isalpha(c))
+                if (is_tagname(c))
                     add_to_name(c);
                 else if (c == '>')
                     current_state = END;
@@ -241,7 +276,7 @@ namespace qwe {
                     accepted = false;
                 break;
             case NAME:
-                if (isalpha(c))
+                if (is_tagname(c))
                     add_to_name(c);
                 else if (c == '>')
                     current_state = END; 
@@ -260,7 +295,7 @@ namespace qwe {
                     current_state = EMPTY;
                     empty = true;
                 }
-                else if (isalpha(c))
+                else if (is_attkey(c))
                 {
                     current_state = KEY;
                     current_key += c;
@@ -269,7 +304,7 @@ namespace qwe {
                     accepted = false;
                 break;
             case KEY:
-                if (isalpha(c))
+                if (is_attkey(c))
                     current_key += c;
                 else if (c == '=')
                     current_state = EQUAL;
@@ -283,11 +318,13 @@ namespace qwe {
                     accepted = false;
                 break;
             case VALUE:
-                if (isalpha(c))
+                if (is_attval(c))
                     current_value += c;
                 else if (c == '"')
                 {
                     element->add_attribute(current_key, current_value);
+                    current_key = "";
+                    current_value = "";
                     current_state = END_V;
                 }
                 else
@@ -376,7 +413,7 @@ namespace qwe {
      * Read next processing intruction. This implementation does
      * nothing except stroing PI contents in PiToken::contents. The
      * procedure is very permissive, allowing everything for which
-     * isxmltext holds to be between PI delimeters. XML prolog is
+     * ispicontent holds to be between PI delimeters. XML prolog is
      * treated like a PI.
      *
      @verbatim
@@ -392,7 +429,7 @@ namespace qwe {
      START -> OPEN [label="<"];
      OPEN -> CONTENTS [label="?"];
 
-     CONTENTS -> CONTENTS [label="[[:isxmltext():]]"];
+     CONTENTS -> CONTENTS [label="[[:ispicontent():]]"];
      CONTENTS -> CLOSE [label="?"];
      CLOSE -> END [label=">"];
      END [shape="oval"];
@@ -405,7 +442,6 @@ namespace qwe {
     bool PiToken::feed(std::istream &in)
     {
         char c;
-        isxmltext contents_test = isxmltext();
         
         while ((c = in.get()))
         {
@@ -428,7 +464,7 @@ namespace qwe {
             case CONTENTS:
                 if (c == '?')
                     current_state = CLOSE;
-                else if (!contents_test(c))
+                else if (!is_picontent(c))
                     accepted = false;
                 break;
             case CLOSE:
@@ -457,7 +493,7 @@ namespace qwe {
     /**
      * Return true if character is space between XML nodes.
      */
-    bool isxmlspace::operator () (char c)
+    bool Fis_xmlspace::operator () (char c)
     {
         return isspace(c);
     }
@@ -467,10 +503,9 @@ namespace qwe {
      *
      * @see http://www.w3.org/TR/REC-xml/#dt-chardata
      */
-    bool isxmltext::operator () (char c)
+    bool Fis_xmltext::operator () (char c)
     {
-        return ((isgraph(c) || isspace(c)) &&   \
-                !((c == '<') || (c == '&')));
+        return is_xmltext(c);
     }
 
     XmlLexer::XmlLexer(TokenList *l)
