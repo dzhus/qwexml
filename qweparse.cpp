@@ -67,7 +67,10 @@ namespace qwe {
     {
         Token::flush();
         current_state = START;
-        name = "";
+
+        /// @todo Fix leak
+        element = new ElementNode();
+
         closing = false;
         empty = false;
     }
@@ -83,7 +86,7 @@ namespace qwe {
         type = TAG;
         flush();
         contents = t.contents;
-        name = t.name;
+        element = t.element;
         closing = t.closing;
         empty = t.empty;
     }
@@ -92,10 +95,10 @@ namespace qwe {
     {
         return new TagToken(*this);
     }
-    
-    std::string TagToken::get_name(void)
+
+    ElementNode* TagToken::get_element(void)
     {
-        return name;
+        return element;
     }
 
     bool TagToken::is_closing(void)
@@ -111,6 +114,11 @@ namespace qwe {
     bool TagToken::can_eat(std::istream &in)
     {
         return ('<' == in.peek());
+    }
+
+    void TagToken::add_to_name(char c)
+    {
+        element->set_name(element->get_name() + c);
     }
 
     /**
@@ -166,6 +174,7 @@ namespace qwe {
     bool TagToken::feed(std::istream &in)
     {
         char c;
+        
         while ((c = in.get()))
         {
             bool accepted = true;
@@ -181,7 +190,7 @@ namespace qwe {
             case OPEN:
                 if (isalpha(c))
                 {
-                    name += c;
+                    add_to_name(c);
                     current_state = NAME;
                 }
                 else if (c == '/')
@@ -195,7 +204,7 @@ namespace qwe {
             case SLASH:
                 if (isalpha(c))
                 {
-                    name += c;
+                    add_to_name(c);
                     current_state = CLOSE_NAME;
                 }
                 else
@@ -203,7 +212,7 @@ namespace qwe {
                 break;
             case CLOSE_NAME:
                 if (isalpha(c))
-                    name += c;
+                    add_to_name(c);
                 else if (c == '>')
                     current_state = END;
                 else if (isspace(c))
@@ -213,7 +222,7 @@ namespace qwe {
                 break;
             case NAME:
                 if (isalpha(c))
-                    name += c;
+                    add_to_name(c);
                 else if (c == '>')
                     current_state = END; 
                 else if (isspace(c))
@@ -395,8 +404,8 @@ namespace qwe {
                 {
                     if (p.stack->is_empty())
                         error(UNEXPECTED_CLOSE);
-                    else if ((current_tag->get_name()) ==       \
-                             p.stack->last_item()->get_name())
+                    else if ((current_tag->get_element()->get_name()) == \
+                             p.stack->last_item()->get_element()->get_name())
                     {
                         p.stack->pop_item();
                         p.current_node = (ElementNode *)(p.current_node->get_parent());
@@ -406,7 +415,7 @@ namespace qwe {
                 }
                 else
                 {
-                    p.current_node->add_child(new ElementNode(current_tag->get_name()));
+                    p.current_node->add_child(current_tag->get_element());
 
                     /// Empty tags are not pushed to stack because
                     /// they don't need to be closed

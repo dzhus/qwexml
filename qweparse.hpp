@@ -114,12 +114,7 @@ namespace qwe {
          */
         state current_state;
 
-        /**
-         * Tag name.
-         */
-        std::string name;
-
-        /**
+         /**
          * True if tag is closing.
          */
         bool closing;
@@ -128,6 +123,16 @@ namespace qwe {
          * True if tag is empty.
          */
         bool empty;
+
+        /**
+         * Empty element node object for this token.
+         */
+        ElementNode* element;
+
+        /**
+         * Add one character to element name.
+         */
+        void add_to_name(char c);
 
     public:
         void flush(void);
@@ -138,14 +143,14 @@ namespace qwe {
         
         TagToken* _copy(void);
     
-        std::string get_name(void);
+        ElementNode* get_element(void);
 
         bool is_closing(void);
 
         bool is_empty(void);
 
         /**
-         * Reads one tag from stream and sets tag properties.
+         * Reads tag from stream and sets TagToken::element field.
          */
         bool feed(std::istream &in);
         
