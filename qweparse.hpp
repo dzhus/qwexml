@@ -20,8 +20,8 @@ namespace qwe {
      * Token class.
      *
      * Tokens work with input streams, consuming character data from
-     * them. A high level parser must parse character stream of known
-     * tokens using the following policy:
+     * them. A high level lexer must break character stream of known
+     * tokens into lexems using the following policy:
      *
      * - choose token to use by calling Token::can_eat() method of each
      *   known token with input stream;
@@ -29,8 +29,10 @@ namespace qwe {
      * - feed input stream to chosen token using Token::feed() or input
      *   operator;
      *
-     * - when feeding successfully returns, finished token may be
-     *   added to a list of parsed tokens.
+     * - when feeding successfully returns, if Token::is_finished()
+     *   the token may be added to a list of read tokens. In other
+     *   case, lexer must expect more content of current token to
+     *   come.
      *
      * Token::can_eat() and Token::feed() implementations must
      * guarantee that feed() successfully returns only if no errors
@@ -40,6 +42,8 @@ namespace qwe {
      * input, so while reading a token is in progress all read errors must
      * be considered fatal. Error handling must be implemented in the
      * Token::feed method.
+     *
+     * @see XmlLexer
      */
     class Token {
     protected:
@@ -49,6 +53,11 @@ namespace qwe {
         std::string contents;
     
         token_type type;
+
+        /**
+         * True if token was completely read.
+         */
+        bool finished;
     public:
         /**
          * Prepares token to consume next portion of character data.
@@ -73,6 +82,10 @@ namespace qwe {
     
         /**
          * Read tag from input stream.
+         *
+         * Must set Token::finished to true if read was complete.
+         * Token must properly preserve its inner state in case of EOF
+         * occuring while reading is in progress.
          */
         virtual bool feed(std::istream &in) = 0;
 
@@ -80,6 +93,8 @@ namespace qwe {
          * Feeds input stream to token.
          */
         friend std::istream& operator >>(std::istream &in, Token &t);
+
+        bool is_finished(void);
 
         virtual Token* _copy(void) = 0;
     };
@@ -200,7 +215,11 @@ namespace qwe {
                     contents += c;
                 else
                 {
+                    /// @internal When EOF occurs, SimpleToken is
+                    /// ended. Thus text and space nodes are read in
+                    /// portions.
                     in.putback(c);
+                    finished = true;
                     return true;
                 }
             }

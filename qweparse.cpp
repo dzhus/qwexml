@@ -30,6 +30,7 @@ namespace qwe {
     void Token::flush(void)
     {
         contents = "";
+        finished = false;
     }
 
     std::string Token::get_contents(void)
@@ -40,6 +41,12 @@ namespace qwe {
     token_type Token::get_type(void)
     {
         return type;
+    }
+
+
+    bool Token::is_finished(void)
+    {
+        return finished;
     }
 
     /**
@@ -228,8 +235,12 @@ namespace qwe {
                 break;
             case END:
                 in.putback(c);
+                finished = true;
                 return true;
             }
+
+            if (in.eof())
+                return true;
             
             if (accepted)
                 contents += c;
@@ -297,16 +308,21 @@ namespace qwe {
         end = l.known->end();
         while (in.peek() != -1)
         {
-            /// Choose and read one full token
-            l.current = l.choose_token(in);
+            /// If there's no token currently being read, choose the
+            /// next one to consume
+            if (!l.current)
+                l.current = l.choose_token(in);
             in >> *(l.current);
             
-            /// Store copy of fully read token
-            l.tokens->push_item(l.current);
+            if (l.current->is_finished())
+            {
+                /// Store copy of fully read token
+                l.tokens->push_item(l.current);
 
-            /// Flush worker token
-            l.current->flush();
-            l.current = 0;
+                /// Flush worker token
+                l.current->flush();
+                l.current = 0;
+            }
         }
         return in;
     }
