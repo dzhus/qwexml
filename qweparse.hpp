@@ -139,7 +139,7 @@ namespace qwe {
         /**
          * Possible states of FA used to read a tag from stream.
          */
-        enum state {START, OPEN, SLASH, NAME, CLOSE_NAME, 
+        enum state {START, OPEN, CLOSE_SLASH, NAME, CLOSE_NAME, 
                     ESPC, CESPC,
                     KEY, EQUAL, VALUE, END_V,
                     EMPTY, END};

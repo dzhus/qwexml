@@ -193,7 +193,7 @@ namespace qwe {
 
      START [shape="oval"];
      START -> OPEN [label="<"];
-     OPEN -> SLASH [label="/"];
+     OPEN -> CLOSE_SLASH [label="/"];
 
      ESPC -> KEY [label="[[:is_attkey():]]"];
      KEY -> KEY [label="[[:is_attkey():]]"];
@@ -207,7 +207,7 @@ namespace qwe {
 
      NAME -> ESPC [label="[[:space:]]"];
      OPEN -> NAME [label="[[:is_tagname():]]"];
-     SLASH -> CLOSE_NAME [label="[[:is_tagname():]]"];
+     CLOSE_SLASH -> CLOSE_NAME [label="[[:is_tagname():]]"];
      CLOSE_NAME -> CLOSE_NAME [label="[[:is_tagname():]]"];
      NAME -> NAME [label="[[:is_tagname():]]"];
      CLOSE_NAME -> END [label=">"];
@@ -250,13 +250,13 @@ namespace qwe {
                 }
                 else if (c == '/')
                 {
-                    current_state = SLASH;
+                    current_state = CLOSE_SLASH;
                     closing = true;
                 }
                 else
                     accepted = false;
                 break;
-            case SLASH:
+            case CLOSE_SLASH:
                 if (is_tagname(c))
                 {
                     add_to_name(c);
