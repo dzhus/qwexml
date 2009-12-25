@@ -293,7 +293,6 @@ namespace qwe {
                 else if (c == '/')
                 {
                     current_state = EMPTY;
-                    empty = true;
                 }
                 else if (is_attkey(c))
                 {
@@ -347,6 +346,7 @@ namespace qwe {
                     accepted = false;
                 break;
             case EMPTY:
+                empty = true;
                 if (c == '>')
                     current_state = END;
                 else
