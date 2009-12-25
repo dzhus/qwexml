@@ -69,7 +69,7 @@ namespace qwe {
 
     bool is_tagname(char c)
     {
-        return isalnum(c);
+        return isalnum(c) || c == '-';
     }
 
     bool is_attkey(char c)
