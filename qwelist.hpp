@@ -44,6 +44,8 @@ namespace qwe {
 
         ListItem *head, *tail, *head_sentinel, *tail_sentinel;
 
+        int length;
+
         void _init_sentinels(void)
         {
             /// Each list must have unique sentinels
@@ -191,6 +193,7 @@ namespace qwe {
             }
             tail->next = tail_sentinel;
             head->prev = head_sentinel;
+            length++;
         }
 
         /**
@@ -211,6 +214,7 @@ namespace qwe {
                 delete tail;
                 tail = tail->prev;
             }
+            length--;
         }
         
         /**
@@ -230,6 +234,11 @@ namespace qwe {
             {
                 pop_item();
             }
+        }
+        
+        int get_length(void)
+        {
+            return length;
         }
 
         /**
