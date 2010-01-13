@@ -6,6 +6,9 @@ namespace qwe {
         parent = 0;
     }
 
+    XmlNode::~XmlNode(void)
+    {}
+
     XmlNode* XmlNode::get_parent(void)
     {
         return parent;
@@ -62,10 +65,12 @@ namespace qwe {
         attributes = new AttrList();
     }
 
-    /**
-     * @note Double memory allocation occurs here because list copies
-     * all data!
-     */
+    ElementNode::~ElementNode(void)
+    {
+        delete children;
+        delete attributes;
+    }
+
     void ElementNode::add_attribute(std::string name, std::string value)
     {
         attributes->push_item(new AttrNode(name, value));

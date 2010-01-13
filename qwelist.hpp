@@ -152,6 +152,14 @@ namespace qwe {
             _init_sentinels();
         }
 
+        ~List(void)
+        {
+            clear();
+            
+            delete head;
+            delete tail;
+        }
+
         List(List &l)
             :head(0), tail(0)
         {
@@ -197,6 +205,7 @@ namespace qwe {
             else
             {
                 tail->prev->next = tail_sentinel;
+                delete tail;
                 tail = tail->prev;
             }
         }
@@ -214,13 +223,9 @@ namespace qwe {
          */
         void clear(void)
         {
-            StlIterator begin, end;
-            begin = rbegin();
-            end = rend();
-            while (begin != end)
+            while (!is_empty())
             {
                 pop_item();
-                begin--;
             }
         }
 

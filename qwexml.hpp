@@ -26,6 +26,7 @@ namespace qwe {
 
     public:
         XmlNode(void);
+        virtual ~XmlNode(void);
 
         XmlNode* get_parent(void);
 
@@ -49,7 +50,7 @@ namespace qwe {
          * Constructs TextNode object with given contents.
          */
         TextNode(std::string s);
-        
+
         /**
          * Returns raw contents of text node.
          */
@@ -72,7 +73,7 @@ namespace qwe {
         std::string value;
     public:
         AttrNode(std::string n, std::string v);
-        
+
         std::string get_name(void);
         
         std::string get_value(void);
@@ -96,6 +97,8 @@ namespace qwe {
 
     public:
         ElementNode(void);
+        
+        ~ElementNode(void);
         
         ElementNode(std::string s);
 
