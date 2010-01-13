@@ -156,8 +156,8 @@ namespace qwe {
         {
             clear();
             
-            delete head;
-            delete tail;
+            delete head_sentinel;
+            delete tail_sentinel;
         }
 
         List(List &l)
