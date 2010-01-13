@@ -4,6 +4,7 @@
 #include <iterator>
 #endif
 #include "qwelist.hpp"
+#include "qwestring.hpp"
 
 /**
  * XML structure classes.
@@ -30,7 +31,7 @@ namespace qwe {
 
         XmlNode* get_parent(void);
 
-        virtual std::string get_printable(void) = 0;
+        virtual String& get_printable(void) = 0;
 
         friend class TextNode;
         friend class ElementNode;
@@ -43,25 +44,25 @@ namespace qwe {
      */
     class TextNode : public XmlNode {
     private:
-        std::string str;
+        String str;
 
     public:
         /**
          * Constructs TextNode object with given contents.
          */
-        TextNode(std::string s);
+        TextNode(String &s);
 
         /**
          * Returns raw contents of text node.
          */
-        std::string get_contents(void);
+        String get_contents(void);
 
-        void set_contents(std::string s);
+        void set_contents(String &s);
 
         /**
          * Returns printable representation of text node contents.
          */
-        std::string get_printable(void);
+        String& get_printable(void);
     };
 
     /**
@@ -69,16 +70,16 @@ namespace qwe {
      */
     class AttrNode {
     private:
-        std::string name;
-        std::string value;
+        String name;
+        String value;
     public:
-        AttrNode(std::string n, std::string v);
+        AttrNode(String &n, String &v);
 
-        std::string get_name(void);
+        String& get_name(void);
         
-        std::string get_value(void);
+        String& get_value(void);
         
-        void set_value(std::string &v);
+        void set_value(String &v);
     };
     typedef List <AttrNode *> AttrList;
 
@@ -90,7 +91,7 @@ namespace qwe {
         /**
          * Name of XML element.
          */
-        std::string name;
+        String name;
         
         NodeList *children;
         AttrList *attributes;
@@ -100,12 +101,12 @@ namespace qwe {
         
         ~ElementNode(void);
         
-        ElementNode(std::string s);
+        ElementNode(String &s);
 
         /**
          * Adds new attribute to element provided its key and value.
          */
-        void add_attribute(std::string name, std::string value);
+        void add_attribute(String &name, String &value);
 
         /**
          * Adds new attribute using a pointer to existing AttrNode object.
@@ -129,15 +130,15 @@ namespace qwe {
         /**
          * Returns plain name of element.
          */
-        std::string get_name(void);
+        String& get_name(void);
         
-        void set_name(std::string s);
+        void set_name(String &s);
         
         /**
          * Returns printable representation of element node with all
          * attributes and children.
          */
-        std::string get_printable(void);
+        String& get_printable(void);
         
         /**
          * Iterators for children

@@ -1,4 +1,3 @@
-#include <string>
 #include <iostream>
 #include <stdlib.h>
 #include "qweparse.hpp"
@@ -41,7 +40,7 @@ namespace qwe {
         finished = false;
     }
 
-    std::string Token::get_contents(void)
+    String& Token::get_contents(void)
     {
         return contents;
     }
@@ -148,7 +147,9 @@ namespace qwe {
 
     void TagToken::add_to_name(char c)
     {
-        element->set_name(element->get_name() + c);
+        String s = element->get_name();
+        s.append(c);
+        element->set_name(s);
     }
 
     /**
@@ -607,7 +608,7 @@ namespace qwe {
         lexer = new XmlLexer(xml_tokens);
 
         stack = new List <TagToken *>;
-        current_node = root = new ElementNode("T");
+        current_node = root = new ElementNode();
     }
 
     bool XmlParser::feed(std::istream &in)
@@ -618,7 +619,6 @@ namespace qwe {
         Token *current;
         TagToken *current_tag;
         TextToken *current_text;
-        SpaceToken *current_space;
 
         /// Forget tokens read during last feeding and consume new
         /// portion

@@ -1,7 +1,6 @@
 #ifndef QWE_XMLPARSE_H
 #define QWE_XMLPARSE_H
 #include "qwexml.hpp"
-#include <string>
 #include <iostream>
 #include <stdlib.h>    
 
@@ -51,7 +50,7 @@ namespace qwe {
         /**
          * Raw token contents as read from input stream.
          */
-        std::string contents;
+        String contents;
     
         token_type type;
 
@@ -65,7 +64,7 @@ namespace qwe {
          */
         virtual void flush(void);
 
-        std::string get_contents(void);
+        String& get_contents(void);
 
         virtual token_type get_type(void);
         
@@ -167,12 +166,12 @@ namespace qwe {
         /**
          * Key of attribute currently being read.
          */
-        std::string current_key;
+        String current_key;
 
         /**
          * Value of attribute currently being read.
          */
-        std::string current_value;
+        String current_value;
 
     public:
         void flush(void);

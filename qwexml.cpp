@@ -14,40 +14,40 @@ namespace qwe {
         return parent;
     }
 
-    TextNode::TextNode(std::string s)
+    TextNode::TextNode(String &s)
         :str(s)
     {}
 
-    std::string TextNode::get_contents(void)
+    String TextNode::get_contents(void)
     {
         return str;
     }
     
-    void TextNode::set_contents(std::string s)
+    void TextNode::set_contents(String &s)
     {
         str = s;
     }
 
-    std::string TextNode::get_printable(void)
+    String& TextNode::get_printable(void)
     {
-        return get_contents();
+        return str;
     }
 
-    AttrNode::AttrNode(std::string n, std::string v)
+    AttrNode::AttrNode(String &n, String &v)
         :name(n), value(v)
     {}
 
-    std::string AttrNode::get_name(void)
+    String& AttrNode::get_name(void)
     {
         return name;
     }
 
-    std::string AttrNode::get_value(void)
+    String& AttrNode::get_value(void)
     {
         return value;
     }
 
-    void AttrNode::set_value(std::string &v)
+    void AttrNode::set_value(String &v)
     {
         value = v;
     }
@@ -58,7 +58,7 @@ namespace qwe {
         attributes = new AttrList();
     }
     
-    ElementNode::ElementNode(std::string s)
+    ElementNode::ElementNode(String &s)
         :name(s)
     {
         children = new NodeList();
@@ -71,7 +71,7 @@ namespace qwe {
         delete attributes;
     }
 
-    void ElementNode::add_attribute(std::string name, std::string value)
+    void ElementNode::add_attribute(String &name, String &value)
     {
         attributes->push_item(new AttrNode(name, value));
     }
@@ -103,14 +103,14 @@ namespace qwe {
         return !(attributes->is_empty());
     }
 
-    std::string ElementNode::get_name(void)
+    String& ElementNode::get_name(void)
     {
         return name;
     }
 
-    void ElementNode::set_name(std::string s)
+    void ElementNode::set_name(String &s)
     {
-        name = s;
+        name = String(s);
     }
 
     /**
@@ -118,29 +118,33 @@ namespace qwe {
      * recursively traverse all children and add their printable
      * strings.
      */
-    std::string ElementNode::get_printable(void)
+    String& ElementNode::get_printable(void)
     {
-        std::string s = std::string();
+        /// Allocate on heap so we can return a reference.
+        String *s = new String();
         /// Opening tag
-        s += "<" + get_name();
+        *s += "<";
+        *s += get_name();
 
         /// Attributes
         if (has_attributes())
         {
-            s += " ";
+            *s += " ";
             AttrList::StlIterator i = attributes_begin(), e = attributes_end();
             bool first = true;
             while (i != e)
             {
                 if (!first)
-                    s += " ";
+                    *s += " ";
                 first = false;
-                s += (*i)->get_name();
-                s += "=\"" + (*i)->get_value() +"\"";
+                *s += (*i)->get_name();
+                *s += "=\"";
+                *s += (*i)->get_value();
+                *s += "\"";
                 i++;
             }
         }
-        s += ">";
+        *s += ">";
 
         /// Children
         if (has_children())
@@ -148,14 +152,16 @@ namespace qwe {
             NodeList::StlIterator i = children_begin(), e = children_end();
             while (i != e)
             {
-                s += (*i)->get_printable();
+                *s += (*i)->get_printable();
                 i++;
             }
         }
 
         /// Closing tag
-        s+= "</" + get_name() + ">";
-        return s;
+        *s += "</";
+        *s += get_name();
+        *s += ">";
+        return *s;
     }
 
     NodeList::StlIterator ElementNode::children_begin(void)
