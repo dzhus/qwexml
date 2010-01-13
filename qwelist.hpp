@@ -78,7 +78,7 @@ namespace qwe {
             typedef std::bidirectional_iterator_tag iterator_category;
             typedef Data value_type;
             typedef ptrdiff_t difference_type;
-            typedef Data* pointer;
+            typedef Data pointer;
             typedef Data& reference;
     #endif
 
@@ -140,7 +140,7 @@ namespace qwe {
             }
 
             /**
-             * Return pointer to iterator's current item.
+             * Return iterator's current item.
              */
             Data operator *(void)
             {
@@ -203,17 +203,17 @@ namespace qwe {
          */
         void pop_item()
         {
+            ListItem *l = tail;
             if (tail->prev == head_sentinel)
             {
-                delete tail;
                 head = tail = 0;
             }
             else
             {
                 tail->prev->next = tail_sentinel;
-                delete tail;
                 tail = tail->prev;
             }
+            delete l;
             length--;
         }
         
