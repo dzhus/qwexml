@@ -544,29 +544,38 @@ namespace qwe {
      * Read one token from input stream and add it to XmlLexer::tokens
      * list.
      */
-    std::istream& operator >>(std::istream &in, XmlLexer &l)
+    bool XmlLexer::feed(std::istream &in)
     {
         /// Iterators over the list of known tokens
         TokenList::StlIterator i, end;
-        end = l.known->end();
+        end = known->end();
         while (in.peek() != -1)
         {
             /// If there's no token currently being read, choose the
             /// next one to consume
-            if (!l.current)
-                l.current = l.choose_token(in);
-            in >> *(l.current);
+            if (!current)
+                current = choose_token(in);
+            in >> *(current);
             
-            if (l.current->is_finished())
+            if (current->is_finished())
             {
                 /// Store copy of fully read token
-                l.tokens->push_item(l.current);
+                tokens->push_item(current);
 
                 /// Flush worker token
-                l.current->flush();
-                l.current = 0;
+                current->flush();
+                current = 0;
             }
         }
+        return true;
+    }
+
+    /**
+     * Wrap XmlLexer::feed() for use with input operator.
+     */
+    std::istream& operator >>(std::istream &in, XmlLexer &l)
+    {
+        l.feed(in);
         return in;
     }
 
@@ -599,8 +608,8 @@ namespace qwe {
         current_node = root = new ElementNode("T");
     }
 
-    std::istream& operator >>(std::istream &in, XmlParser &p)
-    {            
+    bool XmlParser::feed(std::istream &in)
+    {
         TokenList::StlIterator begin, end;
 
         // Temporary tokens
@@ -611,16 +620,16 @@ namespace qwe {
 
         /// Forget tokens read during last feeding and consume new
         /// portion
-        p.lexer->flush();
-        in >> *(p.lexer);
+        lexer->flush();
+        in >> *(lexer);
 
-        begin = p.lexer->begin();
-        end = p.lexer->end();
+        begin = lexer->begin();
+        end = lexer->end();
 
         while (begin != end)
         {
             /// Prohibit multiple top-level elements
-            if (p.top() && p.is_finished())
+            if (top() && is_finished())
                 error(MULTI_TOP);
         
             current = *(begin);
@@ -632,38 +641,47 @@ namespace qwe {
                 /// the same name is on the top of XmlParser::stack.
                 if (current_tag->is_closing())
                 {
-                    if (p.stack->is_empty())
+                    if (stack->is_empty())
                         error(UNEXPECTED_CLOSE);
                     else if ((current_tag->get_element()->get_name()) == \
-                             p.stack->last_item()->get_element()->get_name())
+                             stack->last_item()->get_element()->get_name())
                     {
-                        p.stack->pop_item();
-                        p.current_node = (ElementNode *)(p.current_node->get_parent());
+                        stack->pop_item();
+                        current_node = (ElementNode *)(current_node->get_parent());
                     }
                     else
                         error(UNBALANCED_TAG);
                 }
                 else
                 {
-                    p.current_node->add_child(current_tag->get_element());
+                    current_node->add_child(current_tag->get_element());
 
                     /// Empty tags are not pushed to stack because
                     /// they don't need to be closed
                     if (!current_tag->is_empty())
                     {
-                        p.stack->push_item(current_tag);
-                        p.current_node = (ElementNode *)(p.current_node->last_child());
+                        stack->push_item(current_tag);
+                        current_node = (ElementNode *)(current_node->last_child());
                     }
                 }
                 break;
 
             case TEXT:
                 current_text = (TextToken *)(current);
-                p.current_node->add_child(new TextNode(current_text->get_contents()));
+                current_node->add_child(new TextNode(current_text->get_contents()));
                 break;
             }
             begin++;
         }
+        return true;
+    }
+
+    /**
+     * Wrap XmlParser::feed() for use with input operator.
+     */
+    std::istream& operator >>(std::istream &in, XmlParser &p)
+    {
+        p.feed(in);
         return in;
     }
 

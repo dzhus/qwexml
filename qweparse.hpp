@@ -93,11 +93,6 @@ namespace qwe {
          */
         virtual bool feed(std::istream &in) = 0;
 
-        /**
-         * Feeds input stream to token.
-         */
-        friend std::istream& operator >>(std::istream &in, Token &t);
-
         bool is_finished(void);
 
         virtual Token* _copy(void) = 0;
@@ -356,7 +351,7 @@ namespace qwe {
         /**
          * Choose next token and completely read it.
          */
-        friend std::istream& operator >>(std::istream &in, XmlLexer &l);
+        bool feed(std::istream &in);
 
         /**
          * Clears list of read tokens.
@@ -417,8 +412,8 @@ namespace qwe {
          *
          * @see XmlParser::is_finished()
          */
-        friend std::istream& operator >>(std::istream &in, XmlParser &p);
-        
+        bool feed(std::istream &in);
+
         /**
          * Checks if parsing is complete.
          *
@@ -432,5 +427,12 @@ namespace qwe {
          */
         XmlNode* top(void);
     };
+
+    /**
+     * Wrappers for feed methods.
+     */
+    std::istream& operator >>(std::istream &in, Token &t);
+    std::istream& operator >>(std::istream &in, XmlLexer &l);
+    std::istream& operator >>(std::istream &in, XmlParser &p);
 }
 #endif
