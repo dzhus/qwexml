@@ -13,23 +13,13 @@
 
 namespace qwe {
     /**
-     * Heterogeneous list.
+     * Bidirectional list.
      *
-     * List items contain pointers to copies of objects pointers to
-     * which were pushed to the list.
+     * List items contain pointers which were pushed to the list.
      *
-     * List elements are copied as they're added to the list. List
-     * elements must support virual _copy() method which returns a pointer
-     * to the copied object.
-     * 
-     * @remark Rationale behind storing pointers is our wish to
-     * support STL-style external iterators for lists of objects
-     * which are inherited from single base class.
+     * Supports STL-style iteration.
      *
      * @param T Base class for element stored in the list.
-     *
-     * @internal We need _copy because virtual copy constructors aren't
-     * supported.
      */
     template <class T>
     class List {
@@ -48,7 +38,7 @@ namespace qwe {
             ListItem(Data *d)
                 :next(0), prev(0)
             {
-                data = d->_copy();
+                data = d;
             }
         };
 

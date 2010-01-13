@@ -95,7 +95,7 @@ namespace qwe {
 
         bool is_finished(void);
 
-        virtual Token* _copy(void) = 0;
+        virtual Token* copy(void) = 0;
     };
 
     /**
@@ -181,7 +181,7 @@ namespace qwe {
             
         TagToken(TagToken &t);
         
-        TagToken* _copy(void);
+        TagToken* copy(void);
     
         ElementNode* get_element(void);
 
@@ -222,7 +222,7 @@ namespace qwe {
 
         PiToken(PiToken &t);
 
-        PiToken* _copy(void);
+        PiToken* copy(void);
 
         /**
          * Returns true if stream contains processing instruction.
@@ -273,7 +273,7 @@ namespace qwe {
             contents = t.contents;
         }
     
-        SimpleToken* _copy(void)
+        SimpleToken* copy(void)
         {
             return new SimpleToken(*this);
         }

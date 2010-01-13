@@ -31,14 +31,6 @@ namespace qwe {
 
         virtual std::string get_printable(void) = 0;
 
-        /**
-         * Return a pointer to copy of current object.
-         *
-         * We need this because copy constructors can't be declared as
-         * virtual.
-         */
-        virtual XmlNode* _copy(void) = 0;
-
         friend class TextNode;
         friend class ElementNode;
     };
@@ -57,10 +49,6 @@ namespace qwe {
          * Constructs TextNode object with given contents.
          */
         TextNode(std::string s);
-
-        TextNode(TextNode &n);
-
-        TextNode* _copy(void);
         
         /**
          * Returns raw contents of text node.
@@ -84,10 +72,6 @@ namespace qwe {
         std::string value;
     public:
         AttrNode(std::string n, std::string v);
-        
-        AttrNode(AttrNode &n);
-        
-        AttrNode* _copy(void);
         
         std::string get_name(void);
         
@@ -114,13 +98,6 @@ namespace qwe {
         ElementNode(void);
         
         ElementNode(std::string s);
-        
-        /**
-         * Performs a deep copy of existing element node.
-         */
-        ElementNode(ElementNode &n);
-
-        ElementNode* _copy(void);
 
         /**
          * Adds new attribute to element provided its key and value.

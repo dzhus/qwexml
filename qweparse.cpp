@@ -121,7 +121,7 @@ namespace qwe {
         empty = t.empty;
     }
 
-    TagToken* TagToken::_copy(void)
+    TagToken* TagToken::copy(void)
     {
         return new TagToken(*this);
     }
@@ -388,7 +388,7 @@ namespace qwe {
         contents = t.contents;
     }
 
-    PiToken* PiToken::_copy(void)
+    PiToken* PiToken::copy(void)
     {
         return new PiToken(*this);
     }
@@ -560,7 +560,7 @@ namespace qwe {
             if (current->is_finished())
             {
                 /// Store copy of fully read token
-                tokens->push_item(current);
+                tokens->push_item(current->copy());
 
                 /// Flush worker token
                 current->flush();

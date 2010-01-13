@@ -14,11 +14,6 @@ namespace qwe {
     TextNode::TextNode(std::string s)
         :str(s)
     {}
-    
-    TextNode::TextNode(TextNode &n)
-    {
-        str = n.str;
-    }
 
     std::string TextNode::get_contents(void)
     {
@@ -35,25 +30,9 @@ namespace qwe {
         return get_contents();
     }
 
-    TextNode* TextNode::_copy(void)
-    {
-        return new TextNode(*this);
-    }
-
     AttrNode::AttrNode(std::string n, std::string v)
         :name(n), value(v)
     {}
-
-    AttrNode::AttrNode(AttrNode &n)
-    {
-        name = n.name;
-        value = n.value;
-    }
-
-    AttrNode* AttrNode::_copy(void)
-    {
-        return new AttrNode(*this);
-    }
 
     std::string AttrNode::get_name(void)
     {
@@ -81,18 +60,6 @@ namespace qwe {
     {
         children = new NodeList();
         attributes = new AttrList();
-    }
-
-    ElementNode::ElementNode(ElementNode &n)
-    {
-        name = n.name;
-        children = new NodeList(*n.children);
-        attributes = new AttrList(*n.attributes);
-    }
-
-    ElementNode* ElementNode::_copy(void)
-    {
-        return new ElementNode(*this);
     }
 
     /**
