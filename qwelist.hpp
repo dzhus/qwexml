@@ -201,7 +201,10 @@ namespace qwe {
         void pop_item()
         {
             if (tail->prev == head_sentinel)
+            {
+                delete tail;
                 head = tail = 0;
+            }
             else
             {
                 tail->prev->next = tail_sentinel;
