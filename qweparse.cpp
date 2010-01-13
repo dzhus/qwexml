@@ -65,15 +65,14 @@ namespace qwe {
         return in;
     }
 
-
     bool is_tagname(char c)
     {
-        return isalnum(c) || c == '-';
+        return isalnum(c) || c == '-' || c == '_';
     }
 
     bool is_attkey(char c)
     {
-        return isalnum(c);
+        return is_tagname(c);
     }
 
     bool is_attval(char c)
