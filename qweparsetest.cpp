@@ -14,6 +14,7 @@ std::string finished_string(XmlParser *p)
  */
 int main()
 {
+    /// @todo Find out why paring fails with smaller values
     const int buf_size = 128;
 
     XmlParser *p = new XmlParser();

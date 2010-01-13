@@ -225,6 +225,8 @@ namespace qwe {
      *
      * @see TagToken::state
      * @see http://www.w3.org/TR/REC-xml/
+     * 
+     * @todo Refactor this using State pattern
      */
     bool TagToken::feed(std::istream &in)
     {
