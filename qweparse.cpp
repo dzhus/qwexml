@@ -520,6 +520,23 @@ namespace qwe {
         known = new TokenList(*l);
     }
 
+    XmlLexer::~XmlLexer(void)
+    {
+        qwe::TokenList::StlIterator i, end;
+        i = tokens->begin();
+        end = tokens->end();
+
+        // Free worker tokens
+        while (i != end)
+        {
+            delete *i;
+            i++;
+        }
+
+        delete tokens;
+        delete known;
+    }
+
     /**
      * Call Token::can_eat() for each known lexer token and pick the
      * first one which returns true. Tokens are tried in the same
@@ -609,6 +626,24 @@ namespace qwe {
 
         stack = new List <TagToken *>;
         current_node = root = new ElementNode();
+    }
+
+    XmlParser::~XmlParser(void)
+    {
+        qwe::TokenList::StlIterator i, end;
+        i = lexer->known->begin();
+        end = lexer->known->end();
+
+        // Free worker tokens
+        while (i != end)
+        {
+            delete *i;
+            i++;
+        }
+
+        delete lexer;
+        delete stack;
+        delete root;
     }
 
     bool XmlParser::feed(std::istream &in)

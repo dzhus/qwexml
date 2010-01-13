@@ -347,6 +347,8 @@ namespace qwe {
          */
         XmlLexer(TokenList *l);
 
+        ~XmlLexer(void);
+
         /**
          * Choose next token and completely read it.
          */
@@ -401,6 +403,8 @@ namespace qwe {
         ElementNode *current_node;
     public:
         XmlParser(void);
+
+        ~XmlParser(void);
         
         /**
          * Reads a portion of XML data from input stream and updates
