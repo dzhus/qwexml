@@ -35,7 +35,7 @@ namespace qwe {
         friend class TextNode;
         friend class ElementNode;
     };
-    typedef List <XmlNode> NodeList;
+    typedef List <XmlNode *> NodeList;
 
 
     /**
@@ -80,7 +80,7 @@ namespace qwe {
         
         void set_value(std::string &v);
     };
-    typedef List <AttrNode> AttrList;
+    typedef List <AttrNode *> AttrList;
 
     /**
      * Element node with attributes and children.

@@ -310,7 +310,7 @@ namespace qwe {
     typedef SimpleToken<Fis_xmltext, TEXT> TextToken;
     typedef SimpleToken<Fis_xmlspace, SPACE> SpaceToken;
 
-    typedef List <Token> TokenList;
+    typedef List <Token *> TokenList;
 
     class XmlLexer {
     private:
@@ -394,7 +394,7 @@ namespace qwe {
          * @todo Balancing is checked using tag names, so a list of
          * strings will be sufficient here.
          */
-        List<TagToken> *stack;
+        List <TagToken *> *stack;
 
         /**
          * XML element currently being read.

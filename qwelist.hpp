@@ -29,13 +29,13 @@ namespace qwe {
         class ListItem {
         public:
             ListItem *next, *prev;
-            Data *data;
+            Data data;
 
             ListItem(void)
                 :next(0), prev(0), data(0)
             {}
 
-            ListItem(Data *d)
+            ListItem(Data d)
                 :next(0), prev(0)
             {
                 data = d;
@@ -140,7 +140,7 @@ namespace qwe {
             /**
              * Return pointer to iterator's current item.
              */
-            Data* operator *(void)
+            Data operator *(void)
             {
                 return position->data;
             }
@@ -176,7 +176,7 @@ namespace qwe {
         /**
          * Append new item to the end of list.
          */
-        void push_item(Data *d)
+        void push_item(Data d)
         {
             ListItem *n = new ListItem(d);
             if (!head)
@@ -256,12 +256,12 @@ namespace qwe {
             return StlIterator(this, this->head_sentinel);
         }
 
-        Data* first_item(void)
+        Data first_item(void)
         {
             return *begin();
         }
 
-        Data* last_item(void)
+        Data last_item(void)
         {
             return *rbegin();
         }
