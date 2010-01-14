@@ -24,6 +24,8 @@ namespace qwe {
 
         LString(LString &s);
 
+        ~LString(void);
+        
         /**
          * Appends character contents to string.
          */

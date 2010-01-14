@@ -18,6 +18,11 @@ namespace qwe {
         chars = new CharList(*s.chars);
     }
 
+    LString::~LString(void)
+    {
+        delete chars;
+    }
+
     void LString::append(const char *c)
     {
         while (*c != 0)
