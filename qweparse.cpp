@@ -442,6 +442,8 @@ namespace qwe {
      *
      * @see http://www.w3.org/TR/REC-xml/#dt-pi
      * @see http://www.w3.org/TR/REC-xml/#sec-prolog-dtd
+     *
+     * @todo Refactor this using State pattern
      */
     bool PiToken::feed(std::istream &in)
     {
