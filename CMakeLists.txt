@@ -25,4 +25,3 @@ ADD_TEST(NAME parsing
 ENABLE_TESTING()
 
 ADD_CUSTOM_TARGET(doc doxygen Doxyfile)
-ADD_CUSTOM_TARGET(hgclean rm -frv `hg status --unknown --no-status`)
