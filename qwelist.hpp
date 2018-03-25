@@ -5,6 +5,8 @@
 #endif
 #include <string>
 
+#include <stddef.h>
+
 /**
  * @todo Use homebrew string implementation.
  * 
