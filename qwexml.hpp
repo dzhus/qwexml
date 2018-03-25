@@ -76,9 +76,9 @@ namespace qwe {
         AttrNode(String &n, String &v);
 
         String& get_name(void);
-        
+
         String& get_value(void);
-        
+
         void set_value(String &v);
     };
     typedef List <AttrNode *> AttrList;
@@ -92,15 +92,15 @@ namespace qwe {
          * Name of XML element.
          */
         String name;
-        
+
         NodeList *children;
         AttrList *attributes;
 
     public:
         ElementNode(void);
-        
+
         ~ElementNode(void);
-        
+
         ElementNode(String &s);
 
         /**
@@ -112,51 +112,51 @@ namespace qwe {
          * Adds new attribute using a pointer to existing AttrNode object.
          */
         void add_attribute(AttrNode *n);
-        
+
         /**
          * Adds new child element node to element.
          */
         void add_child(ElementNode *n);
-        
+
         /**
          * Adds new child text node to element.
          */
         void add_child(TextNode *n);
-        
+
         bool has_children(void);
-        
+
         bool has_attributes(void);
-        
+
         /**
          * Returns plain name of element.
          */
         String& get_name(void);
-        
+
         void set_name(String &s);
-        
+
         /**
          * Returns printable representation of element node with all
          * attributes and children.
          */
         String& get_printable(void);
-        
+
         /**
          * Iterators for children
          *
          * @todo Boilerplate code.
          */
         NodeList::StlIterator children_begin(void);
-                
+
         NodeList::StlIterator children_end(void);
-        
+
         NodeList::StlIterator children_rbegin(void);
-        
+
         NodeList::StlIterator children_rend(void);
-        
+
         AttrList::StlIterator attributes_begin(void);
-        
+
         AttrList::StlIterator attributes_end(void);
-        
+
         /**
          * Convinience accessors.
          *

@@ -79,7 +79,7 @@ namespace qwe {
     {
         return (is_xmltext(c) && !(c == '"'));
     }
-   
+
     bool is_xmltext(char c)
     {
         return ((isgraph(c) || isspace(c)) &&   \
@@ -108,7 +108,7 @@ namespace qwe {
         type = TAG;
         flush();
     }
-    
+
     TagToken::TagToken(TagToken &t)
     {
         type = TAG;
@@ -158,7 +158,7 @@ namespace qwe {
      *
      * - TagToken::element: empty ElementNode object for read tag
      *   (with attributes).
-     * 
+     *
      * - TagToken::contents: raw character data read from stream (like @c
      *   &lt;sometag>);
      *
@@ -180,7 +180,7 @@ namespace qwe {
      Functions is_tagname(), is_attkey() and is_attval() are used to
      check if valid characters are used in XML tag names, attribute
      keys and values.
-    
+
      Description of tag-reading DFA follows. <code>[[:f():]]</code>
      means «all characters @c c for which @c f(c) holds»
 
@@ -213,7 +213,7 @@ namespace qwe {
      CLOSE_NAME -> END [label=">"];
      NAME -> END [label=">"];
      NAME -> EMPTY [label="/"];
-     
+
      ESPC -> END [label=">"];
      ESPC -> EMPTY [label="/"];
      EMPTY -> END [label=">"];
@@ -225,13 +225,13 @@ namespace qwe {
      *
      * @see TagToken::state
      * @see http://www.w3.org/TR/REC-xml/
-     * 
+     *
      * @todo Refactor this using State pattern
      */
     bool TagToken::feed(std::istream &in)
     {
         char c;
-   
+
         while ((c = in.get()))
         {
             bool accepted = true;
@@ -281,7 +281,7 @@ namespace qwe {
                 if (is_tagname(c))
                     add_to_name(c);
                 else if (c == '>')
-                    current_state = END; 
+                    current_state = END;
                 else if (isspace(c))
                     current_state = ESPC;
                 else if (c == '/')
@@ -362,7 +362,7 @@ namespace qwe {
 
             if (in.eof())
                 return true;
-            
+
             if (accepted)
                 contents += c;
             else
@@ -382,7 +382,7 @@ namespace qwe {
         type = PI;
         flush();
     }
-    
+
     PiToken::PiToken(PiToken &t)
     {
         type = PI;
@@ -418,7 +418,7 @@ namespace qwe {
      * is_picontent() holds to be between PI delimeters. XML prolog is
      * treated like a PI.
      *
-     * Examples of PI's recognized by this implementation: 
+     * Examples of PI's recognized by this implementation:
      @verbatim
      <?xml version="1.0"?>
      <?some processing instruction?>
@@ -428,7 +428,7 @@ namespace qwe {
      digraph pi {
      node [shape=rectangle, fontname="sans-serif", fontsize=14];
      edge [fontname="serif", fontsize=10];
-     
+
      START [shape="oval"];
      START -> OPEN [label="<"];
      OPEN -> CONTENTS [label="?"];
@@ -448,11 +448,11 @@ namespace qwe {
     bool PiToken::feed(std::istream &in)
     {
         char c;
-        
+
         while ((c = in.get()))
         {
             bool accepted = true;
-            
+
             switch (current_state)
             {
             case START:
@@ -487,7 +487,7 @@ namespace qwe {
 
             if (in.eof())
                 return true;
-            
+
             if (accepted)
                 contents += c;
             else
@@ -577,7 +577,7 @@ namespace qwe {
             if (!current)
                 current = choose_token(in);
             in >> *(current);
-            
+
             if (current->is_finished())
             {
                 /// Store copy of fully read token
@@ -602,14 +602,14 @@ namespace qwe {
 
     void XmlLexer::flush(void)
     {
-        tokens->clear();        
+        tokens->clear();
     }
 
     TokenList::StlIterator XmlLexer::begin(void)
     {
         return tokens->begin();
     }
-    
+
     TokenList::StlIterator XmlLexer::end(void)
     {
         return tokens->end();
@@ -669,7 +669,7 @@ namespace qwe {
             /// Prohibit multiple top-level elements
             if (top() && is_finished())
                 error(MULTI_TOP);
-        
+
             current = *(begin);
             switch (current->get_type())
             {

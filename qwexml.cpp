@@ -22,7 +22,7 @@ namespace qwe {
     {
         return str;
     }
-    
+
     void TextNode::set_contents(String &s)
     {
         str = s;
@@ -57,7 +57,7 @@ namespace qwe {
         children = new NodeList();
         attributes = new AttrList();
     }
-    
+
     ElementNode::ElementNode(String &s)
         :name(s)
     {
@@ -168,7 +168,7 @@ namespace qwe {
     {
         return children->begin();
     }
-        
+
     NodeList::StlIterator ElementNode::children_end(void)
     {
         return children->end();

@@ -4,7 +4,7 @@ import pexpect
 
 EOF = ''
 
-# Whitespace compressing 
+# Whitespace compressing
 c = pexpect.spawn('./qweparsetest', timeout=1)
 c.sendline('<top>	<foo> TEXT</foo>But  not  here</top>')
 c.expect('<top><foo>TEXT</foo>But  not  here</top>')

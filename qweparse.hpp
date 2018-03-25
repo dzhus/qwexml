@@ -2,7 +2,7 @@
 #define QWE_XMLPARSE_H
 #include "qwexml.hpp"
 #include <iostream>
-#include <stdlib.h>    
+#include <stdlib.h>
 
 namespace qwe {
 
@@ -15,7 +15,7 @@ namespace qwe {
      * Simple error handler.
      */
     void error(error_type n);
-    
+
     /**
      * Token class.
      *
@@ -51,7 +51,7 @@ namespace qwe {
          * Raw token contents as read from input stream.
          */
         String contents;
-    
+
         token_type type;
 
         /**
@@ -67,10 +67,10 @@ namespace qwe {
         String& get_contents(void);
 
         virtual token_type get_type(void);
-        
+
         /**
          * Check upcoming content in the input stream.
-         * 
+         *
          * General rule for classes implementing this method is to try as
          * little lookahead as possible.
          *
@@ -79,7 +79,7 @@ namespace qwe {
          * @return True if parser should try feeding this token.
          */
         virtual bool can_eat(std::istream &in) = 0;
-    
+
         /**
          * Read tag from input stream.
          *
@@ -124,7 +124,7 @@ namespace qwe {
      * instruction.
      */
     bool is_picontent(char c);
-    
+
     /**
      * Token class for XML tags.
      */
@@ -133,7 +133,7 @@ namespace qwe {
         /**
          * Possible states of FA used to read a tag from stream.
          */
-        enum state {START, OPEN, CLOSE_SLASH, NAME, CLOSE_NAME, 
+        enum state {START, OPEN, CLOSE_SLASH, NAME, CLOSE_NAME,
                     ESPC, CESPC,
                     KEY, EQUAL, VALUE, END_V,
                     EMPTY, END};
@@ -162,7 +162,7 @@ namespace qwe {
          * Add one character to element name.
          */
         void add_to_name(char c);
-    
+
         /**
          * Key of attribute currently being read.
          */
@@ -177,11 +177,11 @@ namespace qwe {
         void flush(void);
 
         TagToken(void);
-            
+
         TagToken(TagToken &t);
-        
+
         TagToken* copy(void);
-    
+
         ElementNode* get_element(void);
 
         bool is_closing(void);
@@ -192,13 +192,13 @@ namespace qwe {
          * Reads tag from stream and sets TagToken::element field.
          */
         bool feed(std::istream &in);
-        
+
         /**
          * Returns true if stream contains a tag.
          */
         bool can_eat(std::istream &in);
     };
-    
+
     /**
      * Processing instruction token.
      */
@@ -227,10 +227,10 @@ namespace qwe {
          * Returns true if stream contains processing instruction.
          */
         bool can_eat(std::istream &in);
-        
+
         /**
          * Reads processing instruction from stream.
-         */     
+         */
         bool feed(std::istream &in);
     };
 
@@ -264,14 +264,14 @@ namespace qwe {
             type = T;
             flush();
         }
-    
+
         SimpleToken(SimpleToken &t)
         {
             type = T;
             flush();
             contents = t.contents;
         }
-    
+
         SimpleToken* copy(void)
         {
             return new SimpleToken(*this);
@@ -281,7 +281,7 @@ namespace qwe {
         {
             return (F()(in.peek()));
         }
-    
+
         /**
          * Read characters while filtering function holds.
          */
@@ -335,11 +335,11 @@ namespace qwe {
          * Choose known token to read next stream data.
          *
          * In case no known token can be read, error() is called.
-         * 
+         *
          * @return Pointer to appropriate Token.
          */
         Token* choose_token(std::istream &in);
-        
+
         friend class XmlParser;
     public:
         /**
@@ -405,7 +405,7 @@ namespace qwe {
         XmlParser(void);
 
         ~XmlParser(void);
-        
+
         /**
          * Reads a portion of XML data from input stream and updates
          * XmlParser::root.

@@ -37,7 +37,7 @@ int main()
         std::cout << (*Iter)->get_printable() << std::endl;
     }
     std::cout << std::endl;
-    
+
     /// Using STL algorithms with node children iterators
     if (std::equal(root1->children_begin(), root1->children_end(), root1->children_begin()))
         std::cout << "std::equal test #1 passed" << std::endl;

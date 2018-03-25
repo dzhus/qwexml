@@ -77,12 +77,12 @@ namespace qwe {
 
     bool operator ==(LString &s1, LString &s2)
     {
-        CharList::StlIterator i1, i2, end1, end2; 
+        CharList::StlIterator i1, i2, end1, end2;
         i1 = s1.chars->begin();
         end1 = s1.chars->end();
         i2 = s2.chars->begin();
         end2 = s2.chars->end();
-        
+
         if (s1.chars->get_length() == s2.chars->get_length())
         {
             while (i1 != end1)

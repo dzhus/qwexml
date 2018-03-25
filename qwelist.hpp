@@ -9,7 +9,7 @@
 
 /**
  * @todo Use homebrew string implementation.
- * 
+ *
  * @todo Fix memory leaks.
  */
 
@@ -159,7 +159,7 @@ namespace qwe {
         ~List(void)
         {
             clear();
-            
+
             delete head_sentinel;
             delete tail_sentinel;
         }
@@ -218,7 +218,7 @@ namespace qwe {
             delete l;
             length--;
         }
-        
+
         /**
          * Return true if list is empty.
          */
@@ -237,7 +237,7 @@ namespace qwe {
                 pop_item();
             }
         }
-        
+
         int get_length(void)
         {
             return length;

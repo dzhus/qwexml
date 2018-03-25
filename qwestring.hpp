@@ -25,14 +25,14 @@ namespace qwe {
         LString(LString &s);
 
         ~LString(void);
-        
+
         /**
          * Appends character contents to string.
          */
         void append(const char *c);
 
         void append(char c);
-        
+
         /**
          * Sends string to output stream.
          */
